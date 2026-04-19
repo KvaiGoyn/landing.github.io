@@ -1,4 +1,4 @@
-User-agent: Googlebot
+﻿User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
@@ -12,3 +12,13 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+# Запретить доступ к техническим директориям
+Disallow: /_next/
+Disallow: /api/
+Disallow: /_not-found/
+Disallow: /404/
+Disallow: /backup/
+
+# Карта сайта
+Sitemap: https://металлпро.рф/sitemap.xml

@@ -1,0 +1,22 @@
+/* TEAM */
+  Разработчик: МеталлПро
+  Сайт: https://metalpro.ru
+  Контакты: info@metalpro.ru
+  Локация: Россия
+
+/* THANKS */
+  Next.js - React framework
+  Vercel - Deployment platform
+  Netlify - Static hosting
+  GitHub Pages - Free hosting
+
+/* SITE */
+  Последнее обновление: 2026-04-19
+  Язык: Русский
+  Движок: Статический Next.js
+  Стандарты: HTML5, CSS3, ES6+
+  Адаптивность: Mobile-first
+
+/* NOTE */
+  Этот сайт создан для демонстрации услуг по производству металлоизделий.
+  Все права защищены.
