@@ -1,0 +1,26 @@
+{
+  "name": "landing_work",
+  "version": "1.0.0",
+  "description": "Этот проект представляет собой собранный статический Next.js лэндинг для компании \"МеталлПро\", специализирующейся на производстве металлоизделий.",
+  "main": "buttons-functionality.js",
+  "scripts": {
+    "start": "npx serve -p 8080",
+    "build": "echo 'No build step required for static site'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KvaiGoyn/landing.github.io.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/KvaiGoyn/landing.github.io/issues"
+  },
+  "homepage": "https://github.com/KvaiGoyn/landing.github.io#readme",
+  
+  "dependencies": {
+    "@sendgrid/mail": "^8.8.0"
+  }
+}
