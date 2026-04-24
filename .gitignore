@@ -54,6 +54,18 @@ docs/_build/
 *.backup
 *.orig
 *.rej
+playwright-report/
 
-# Архив с перемещёнными файлами, не включать в репозиторий
+test-results/
+
 archive/
+
+react-app/
+
+__next.*.txt
+
+index.txt
+
+.htaccess
+
+'

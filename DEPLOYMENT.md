@@ -402,44 +402,6 @@ npm i -g netlify-cli
 netlify deploy --prod
 ```
 
-## 🔐 Переменные окружения (env)
-
-Для отправки писем через SendGrid и использования карт потребуется задать секреты в окружении. Никогда не храните реальные ключи в репозитории.
-
-- `SENDGRID_API_KEY` — ключ SendGrid для отправки писем.
-- `TO_EMAIL` — email получателя заявок (куда будут приходить заявки).
-- `FROM_EMAIL` — email отправителя (должен быть подтверждён в SendGrid).
-- `YANDEX_API_KEY` — ключ Яндекс.Карт (необязательно, можно задать как meta тег).
-
-Пример локального файла: `.env` (не добавляйте в git)
-```
-SENDGRID_API_KEY=SG.xxxxxx
-TO_EMAIL=owner@example.com
-FROM_EMAIL=sender@example.com
-YANDEX_API_KEY=ya.xxxxxx
-```
-
-### Как применить в Netlify
-
-1. В веб-интерфейсе Netlify → Site settings → Build & deploy → Environment → Environment variables — добавьте переменные.
-2. Или в CLI при `netlify dev` можно использовать файл `.env` (Netlify Dev его подхватит).
-
-## 🔎 Локальное тестирование serverless
-
-1. Установите зависимости:
-```powershell
-npm install
-```
-2. Запустите Netlify Dev (подхватит функции и env):
-```powershell
-npx netlify-cli@latest dev
-```
-3. Откройте `http://localhost:8888` (или порт, который покажет Netlify Dev) и протестируйте форму.
-
-Если `netlify dev` не подходит, можно эмулировать вызов функции вручную (node) или временно использовать `curl` к прод-эндпоинту после деплоя.
-
----
-
 ### Cloudflare Pages (CLI)
 ```bash
 npm i -g wrangler

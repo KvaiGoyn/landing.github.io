@@ -4,7 +4,19 @@
   "description": "Этот проект представляет собой собранный статический Next.js лэндинг для компании \"МеталлПро\", специализирующейся на производстве металлоизделий.",
   "main": "buttons-functionality.js",
   "scripts": {
-    "start": "npx serve -p 8080",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:chromium": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:webkit": "playwright test --project=webkit",
+    "test:mobile": "playwright test --project=\"Mobile Chrome\" --project=\"Mobile Safari\"",
+    "test:report": "playwright show-report",
+    "playwright:install": "playwright install",
+    "playwright:install-chromium": "playwright install chromium",
+    "playwright:install-firefox": "playwright install firefox",
+    "playwright:install-webkit": "playwright install webkit",
+    "serve": "npx serve -p 8080",
     "build": "echo 'No build step required for static site'"
   },
   "repository": {
@@ -19,8 +31,9 @@
     "url": "https://github.com/KvaiGoyn/landing.github.io/issues"
   },
   "homepage": "https://github.com/KvaiGoyn/landing.github.io#readme",
-  
-  "dependencies": {
-    "@sendgrid/mail": "^8.8.0"
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "playwright": "^1.59.1",
+    "serve": "^14.2.6"
   }
 }

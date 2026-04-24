@@ -1,0 +1,20 @@
+# Основные редиректы для SPA
+/*    /index.html   200
+
+# Статические файлы Next.js
+/_next/static/*  /_next/static/:splat  200
+
+# Редиректы с www на без www (пример)
+# https://metalpro.ru/*  https://metalpro.ru/:splat  301!
+# http://metalpro.ru/*   https://metalpro.ru/:splat  301!
+
+# Редиректы для старых URL (пример)
+# /old-page  /new-page  301
+# /blog/*    /news/:splat  301
+
+# Обслуживание 404 страницы
+# /404.html  404
+
+# Языковые редиректы (пример)
+# /en/*  /:splat  302!  Language=en
+# /ru/*  /:splat  302!  Language=ru
