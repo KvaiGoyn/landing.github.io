@@ -50,8 +50,8 @@
      * Сбор основных DOM элементов
      */
     function collectElements() {
-        // Навигационные ссылки
-        elements.navLinks = document.querySelectorAll('a[href^="#"]');
+        // Навигационные ссылки (якорные ссылки и кнопки с data-scroll-to)
+        elements.navLinks = document.querySelectorAll('a[href^="#"], [data-scroll-to]');
         
         // Кнопки вызова модальных окон (с атрибутами data-modal)
         elements.modalTriggers = document.querySelectorAll('[data-modal]');
@@ -176,9 +176,16 @@
      */
     function handleSmoothScroll(e) {
         e.preventDefault();
-        const targetId = this.getAttribute('href');
         
-        if (targetId === '#' || targetId === '') return;
+        // Определяем целевой идентификатор из href или data-scroll-to
+        let targetId = this.getAttribute('href');
+        let scrollToAttr = this.getAttribute('data-scroll-to');
+        
+        if (scrollToAttr) {
+            targetId = '#' + scrollToAttr;
+        }
+        
+        if (targetId === '#' || targetId === '' || !targetId) return;
         
         const targetElement = document.querySelector(targetId);
         if (!targetElement) return;
@@ -196,8 +203,10 @@
             behavior: 'smooth'
         });
         
-        // Обновляем URL без перезагрузки страницы
-        history.pushState(null, null, targetId);
+        // Обновляем URL без перезагрузки страницы (только для href, чтобы избежать дублирования #)
+        if (this.hasAttribute('href') && targetId.startsWith('#')) {
+            history.pushState(null, null, targetId);
+        }
     }
 
     /**
@@ -828,6 +837,99 @@
     
     // Применяем полифиллы
     applyPolyfills();
+    
+    /**
+     * Исправление позиционирования стрелочек навигации в разделе отзывов
+     * Эта функция восстанавливает правильное абсолютное позиционирование кнопок prev/next
+     */
+    function fixReviewsNavigation() {
+        // Ждем, пока динамические элементы появятся в DOM
+        setTimeout(() => {
+            // Найдем раздел отзывов
+            const reviewSection = Array.from(document.querySelectorAll('section')).find(section =>
+                section.textContent.includes('Отзывы клиентов') || section.textContent.includes('Нам доверяют более 2500 клиентов')
+            );
+            
+            if (!reviewSection) {
+                console.log('Раздел отзывов не найден');
+                return;
+            }
+            
+            // Найдем кнопки навигации prev/next по классам absolute left-4 и absolute right-4
+            const prevBtn = reviewSection.querySelector('button.absolute.left-4');
+            const nextBtn = reviewSection.querySelector('button.absolute.right-4');
+            
+            // Если не нашли по точным классам, ищем по частичному совпадению
+            const allButtons = Array.from(reviewSection.querySelectorAll('button'));
+            const navButtons = allButtons.filter(btn => {
+                const className = btn.className || '';
+                return className.includes('absolute') && (className.includes('left-') || className.includes('right-'));
+            });
+            
+            const foundPrevBtn = prevBtn || navButtons.find(btn => (btn.className || '').includes('left-'));
+            const foundNextBtn = nextBtn || navButtons.find(btn => (btn.className || '').includes('right-'));
+            
+            // Восстанавливаем правильное абсолютное позиционирование для кнопок prev/next
+            if (foundPrevBtn) {
+                // Левая кнопка: absolute, слева, по центру вертикали
+                foundPrevBtn.style.position = 'absolute';
+                foundPrevBtn.style.left = '1rem'; // left-4 соответствует 1rem
+                foundPrevBtn.style.right = 'auto';
+                foundPrevBtn.style.top = '50%';
+                foundPrevBtn.style.bottom = 'auto';
+                foundPrevBtn.style.transform = 'translateY(-50%)';
+                foundPrevBtn.style.zIndex = '10';
+                foundPrevBtn.style.margin = '0';
+            }
+            
+            if (foundNextBtn) {
+                // Правая кнопка: absolute, справа, по центру вертикали
+                foundNextBtn.style.position = 'absolute';
+                foundNextBtn.style.right = '1rem'; // right-4 соответствует 1rem
+                foundNextBtn.style.left = 'auto';
+                foundNextBtn.style.top = '50%';
+                foundNextBtn.style.bottom = 'auto';
+                foundNextBtn.style.transform = 'translateY(-50%)';
+                foundNextBtn.style.zIndex = '10';
+                foundNextBtn.style.margin = '0';
+            }
+            
+            // Найдем контейнер индикаторов
+            const indicatorContainer = reviewSection.querySelector('div.flex.justify-center.gap-2');
+            if (indicatorContainer) {
+                // Убедимся, что индикаторы правильно выровнены
+                indicatorContainer.style.display = 'flex';
+                indicatorContainer.style.justifyContent = 'center';
+                indicatorContainer.style.alignItems = 'center';
+                indicatorContainer.style.gap = '0.5rem';
+                indicatorContainer.style.marginTop = '1.5rem';
+                indicatorContainer.style.width = '100%';
+            }
+            
+            // Найдем контейнер карусели (возможно div с relative)
+            const carouselContainer = reviewSection.querySelector('div.relative');
+            if (carouselContainer && (foundPrevBtn || foundNextBtn)) {
+                // Убедимся, что контейнер имеет правильное позиционирование
+                carouselContainer.style.position = 'relative';
+                carouselContainer.style.overflow = 'visible';
+            }
+            
+            console.log('Навигация отзывов исправлена', {
+                prevBtn: !!foundPrevBtn,
+                nextBtn: !!foundNextBtn,
+                indicatorContainer: !!indicatorContainer
+            });
+        }, 1000); // Задержка для гарантии загрузки динамического контента
+    }
+    
+    // Запускаем исправление после полной загрузки страницы
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(fixReviewsNavigation, 500);
+        });
+    } else {
+        setTimeout(fixReviewsNavigation, 500);
+    }
     
     // Экспорт функций для глобального доступа (если нужно)
     window.MetallProButtons = {

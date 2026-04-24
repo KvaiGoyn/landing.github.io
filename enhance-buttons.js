@@ -47,6 +47,22 @@
             attributes: {
                 'class': 'portfolio-filter'
             }
+        },
+        // Кнопка "Смотреть портфолио" - плавная прокрутка к разделу портфолио
+        {
+            textMatch: /смотреть портфолио/i,
+            attributes: {
+                'data-scroll-to': 'portfolio',
+                'class': 'smooth-scroll'
+            }
+        },
+        // Кнопка "Смотреть все кейсы" - плавная прокрутка к разделу портфолио
+        {
+            textMatch: /смотреть все кейсы/i,
+            attributes: {
+                'data-scroll-to': 'portfolio',
+                'class': 'smooth-scroll'
+            }
         }
     ];
     
