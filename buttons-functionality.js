@@ -839,8 +839,7 @@
     applyPolyfills();
     
     /**
-     * Исправление позиционирования стрелочек навигации в разделе отзывов
-     * Эта функция восстанавливает правильное абсолютное позиционирование кнопок prev/next
+     * Настройка индикаторов и контейнера карусели отзывов (стрелочки скрыты, остаётся автопрокрутка)
      */
     function fixReviewsNavigation() {
         // Ждем, пока динамические элементы появятся в DOM
@@ -855,44 +854,11 @@
                 return;
             }
             
-            // Найдем кнопки навигации prev/next по классам absolute left-4 и absolute right-4
+            // Скрываем стрелочки навигации (если они ещё не скрыты CSS)
             const prevBtn = reviewSection.querySelector('button.absolute.left-4');
             const nextBtn = reviewSection.querySelector('button.absolute.right-4');
-            
-            // Если не нашли по точным классам, ищем по частичному совпадению
-            const allButtons = Array.from(reviewSection.querySelectorAll('button'));
-            const navButtons = allButtons.filter(btn => {
-                const className = btn.className || '';
-                return className.includes('absolute') && (className.includes('left-') || className.includes('right-'));
-            });
-            
-            const foundPrevBtn = prevBtn || navButtons.find(btn => (btn.className || '').includes('left-'));
-            const foundNextBtn = nextBtn || navButtons.find(btn => (btn.className || '').includes('right-'));
-            
-            // Восстанавливаем правильное абсолютное позиционирование для кнопок prev/next
-            if (foundPrevBtn) {
-                // Левая кнопка: absolute, слева, по центру вертикали
-                foundPrevBtn.style.position = 'absolute';
-                foundPrevBtn.style.left = '1rem'; // left-4 соответствует 1rem
-                foundPrevBtn.style.right = 'auto';
-                foundPrevBtn.style.top = '50%';
-                foundPrevBtn.style.bottom = 'auto';
-                foundPrevBtn.style.transform = 'translateY(-50%)';
-                foundPrevBtn.style.zIndex = '10';
-                foundPrevBtn.style.margin = '0';
-            }
-            
-            if (foundNextBtn) {
-                // Правая кнопка: absolute, справа, по центру вертикали
-                foundNextBtn.style.position = 'absolute';
-                foundNextBtn.style.right = '1rem'; // right-4 соответствует 1rem
-                foundNextBtn.style.left = 'auto';
-                foundNextBtn.style.top = '50%';
-                foundNextBtn.style.bottom = 'auto';
-                foundNextBtn.style.transform = 'translateY(-50%)';
-                foundNextBtn.style.zIndex = '10';
-                foundNextBtn.style.margin = '0';
-            }
+            if (prevBtn) prevBtn.style.display = 'none';
+            if (nextBtn) nextBtn.style.display = 'none';
             
             // Найдем контейнер индикаторов
             const indicatorContainer = reviewSection.querySelector('div.flex.justify-center.gap-2');
@@ -908,17 +874,13 @@
             
             // Найдем контейнер карусели (возможно div с relative)
             const carouselContainer = reviewSection.querySelector('div.relative');
-            if (carouselContainer && (foundPrevBtn || foundNextBtn)) {
+            if (carouselContainer) {
                 // Убедимся, что контейнер имеет правильное позиционирование
                 carouselContainer.style.position = 'relative';
                 carouselContainer.style.overflow = 'visible';
             }
             
-            console.log('Навигация отзывов исправлена', {
-                prevBtn: !!foundPrevBtn,
-                nextBtn: !!foundNextBtn,
-                indicatorContainer: !!indicatorContainer
-            });
+            console.log('Настройка карусели отзывов завершена (стрелочки скрыты)');
         }, 1000); // Задержка для гарантии загрузки динамического контента
     }
     
