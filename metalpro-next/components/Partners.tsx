@@ -2,12 +2,15 @@ import React from 'react';
 
 const Partners = () => {
   const partners = [
-    { name: "ПИК-Недвижимость", type: "Застройщик", image: "/images/placeholder_image.jpg" },
-    { name: "MR Group", type: "Девелопер", image: "/images/placeholder_image.jpg" },
-    { name: "ГК А101", type: "Застройщик", image: "/images/placeholder_image.jpg" },
-    { name: "Самолёт", type: "Застройщик", image: "/images/placeholder_image.jpg" },
-    { name: "Донстрой", type: "Девелопер", image: "/images/placeholder_image.jpg" },
-    { name: "Мортон", type: "Застройщик", image: "/images/placeholder_image.jpg" },
+        { name: "Кировский", type: "Продуктовый магазин", image: "/images/kirovski.png" },
+        { name: "Магнит", type: "Продуктовый магазин", image: "/images/Magnit.png" },
+        { name: "Пятёрочка", type: "Продуктовый магазин", image: "/images/pyaterochka.png" },
+        { name: "Перекрёсток", type: "Продуктовый магазин", image: "/images/perekrestok.png" },
+        { name: "МТС", type: "Салон связи", image: "/images/mts.png" },
+        { name: "Мотив", type: "Салон связи", image: "/images/motiv.png" },
+        { name: "Мегафон", type: "Салон связи", image: "/images/megofon.png" },
+        { name: "Табак +", type: "Табачный магазин", image: null },
+        { name: "Первый Табачный", type: "Табачный магазин", image: null }
   ];
 
   return (
@@ -18,18 +21,26 @@ const Partners = () => {
           <p className="text-gray-600">Работаем с ведущими застройщиками и компаниями</p>
         </div>
         
-        <div className="relative">
-          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-white to-transparent z-10"></div>
-          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-white to-transparent z-10"></div>
+        <div className="relative overflow-hidden">
+          <div className="absolute left-0 top-0 bottom-0 w-48 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-48 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
           
           <div className="flex gap-12 animate-scroll">
             {[...partners, ...partners].map((partner, index) => (
               <div key={index} className="flex-shrink-0 flex items-center gap-4 px-6">
-                <img 
-                  src={partner.image} 
-                  alt={partner.name} 
-                  className="w-12 h-12 rounded-lg object-contain"
-                />
+                {partner.image ? (
+                  <img
+                    src={partner.image}
+                    alt={partner.name}
+                    className="w-12 h-12 rounded-lg object-contain"
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    </svg>
+                  </div>
+                )}
                 <div>
                   <div className="font-semibold text-gray-800 whitespace-nowrap">{partner.name}</div>
                   <div className="text-xs text-gray-400">{partner.type}</div>
@@ -84,15 +95,15 @@ const Partners = () => {
         
         <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6">
           <div className="text-center">
-            <div className="text-2xl md:text-3xl font-bold text-gray-900">50+</div>
+            <div className="text-2xl md:text-3xl font-bold text-gray-900">25+</div>
             <div className="text-sm text-gray-500">корпоративных клиентов</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl md:text-3xl font-bold text-gray-900">100+</div>
+            <div className="text-2xl md:text-3xl font-bold text-gray-900">600+</div>
             <div className="text-sm text-gray-500">объектов сдано</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl md:text-3xl font-bold text-gray-900">15</div>
+            <div className="text-2xl md:text-3xl font-bold text-gray-900">9</div>
             <div className="text-sm text-gray-500">лет на рынке</div>
           </div>
           <div className="text-center">

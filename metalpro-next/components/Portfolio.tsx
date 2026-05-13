@@ -1,54 +1,129 @@
-import React from 'react';
+'use client';
+
+import React, { useMemo, useEffect } from 'react';
+import { usePortfolioFilter } from '@/app/hooks/usePortfolioFilter';
+import { useAppContext } from '@/app/context/AppContext';
+import { useModal } from '@/app/context/AppContext';
+import { Button } from '@/app/components/ui/Button/Button';
 
 const Portfolio = () => {
-  const portfolioItems = [
-    {
-      id: 1,
-      title: "Антивандальные решётки для офиса",
-      description: "Комплексный проект: проектирование, сварка, порошковая покраска и монтаж.",
-      image: "/images/placeholder_image.jpg",
-      tags: ["Сварка", "Покраска", "Монтаж"],
-    },
-    {
-      id: 2,
-      title: "Перила для частного дома",
-      description: "Нержавеющая сталь с порошковым покрытием под дерево.",
-      image: "/images/placeholder_image.jpg",
-      tags: ["Сварка", "Покраска"],
-    },
-    {
-      id: 3,
-      title: "Козырёк над входом",
-      description: "Кованый козырёк с поликарбонатом и антивандальным покрытием.",
-      image: "/images/placeholder_image.jpg",
-      tags: ["Сварка", "Покраска", "Монтаж"],
-    },
-    {
-      id: 4,
-      title: "Откатные ворота",
-      description: "Автоматические ворота с порошковым покрытием и противовандальной защитой.",
-      image: "/images/placeholder_image.jpg",
-      tags: ["Сварка", "Покраска", "Автоматика"],
-    },
-    {
-      id: 5,
-      title: "Решётки на окна коттеджа",
-      description: "Декоративные кованые решётки с защитой от взлома.",
-      image: "/images/placeholder_image.jpg",
-      tags: ["Сварка", "Покраска", "Монтаж"],
-    },
-    {
-      id: 6,
-      title: "Лестница в таунхаусе",
-      description: "Металлический каркас лестницы с деревянными ступенями.",
-      image: "/images/placeholder_image.jpg",
-      tags: ["Сварка", "Покраска"],
-    },
+  const portfolioItems = useMemo(
+    () => [
+      {
+        id: 1,
+        title: "Антивандальные решётки для офиса Мегафон",
+        description: "Проект под ключ: усиленная сварка, порошковая покраска, антивандальное покрытие, монтаж на объекте.",
+        image: "/images/megofon.jpg",
+        tags: ["Сварка", "Покраска", "Монтаж"],
+        category: "Решётки",
+        hasRealPhoto: true
+      },     
+      {
+        id: 2,
+        title: "Антивандальная решетка в частный дом",
+        description: "Решетка из нержавеющей стали с порошковым покрытием.",
+        image: "/images/armature.jpeg",
+        tags: ["Сварка", "Покраска", "Монтаж"],
+        category: "Решётки"
+      },
+      {
+        id: 3,
+        title: "Покраска рамы мотоцикла",
+        description: "Пескоструйная очистка, порошковая покраска рамы в зеленый RAL6038.",
+        image: "/images/motocycle.jpeg",
+        tags: ["Покраска"],
+        category: "Другое"
+      },
+      {
+        id: 4,
+        title: "Каркас второго этажа",
+        description: "Металлокаркас для производственного помещения: сварка, усиленные балки, порошковая покраска.",
+        image: "/images/metal.jpg",
+        tags: ["Сварка", "Покраска"],
+        category: "Другое"
+      },
+      {
+        id: 5,
+        title: "Основание стола",
+        description: "Декоративное подстолье по чертежам заказчика.",
+        image: "/images/table.jpeg",
+        tags: ["Сварка", "Покраска"],
+        category: "Другое",
+      },
+      {
+        id: 6,
+        title: "Покраска дисков",
+        description: "Отчистка накладок на диски машины с последущей порошковой покраской",
+        image: "/images/disk.jpeg",
+        tags: ["Сварка", "Покраска"],
+        category: "Перила и лестницы",
+      },
+    ],
+    []
+  );
+
+  // Все фото для модалки (карусель)
+  const modalImages = [
+    '/images/case_main.jpeg',        // итоговый результат
+    '/images/case_build.jpeg',       // процесс изготовления
+    '/images/case_dev.jpeg',         // разработка / сварка
+    '/images/case_paint_before.jpg', // до покраски
+    '/images/case_paint_after.jpg',  // после покраски
   ];
+
+  const {
+    filteredItems,
+    activeCategory,
+    setActiveCategory,
+    availableCategories,
+    resetFilter,
+    isCategoryActive,
+  } = usePortfolioFilter({
+    items: portfolioItems,
+    initialCategory: 'all',
+    getCategory: (item) => item.category,
+    categories: [
+      { id: 'all', label: 'Все работы' },
+      { id: 'Решётки', label: 'Решётки' },
+      { id: 'Перила и лестницы', label: 'Перила и лестницы' },
+      { id: 'Козырьки и навесы', label: 'Козырьки и навесы' },
+      { id: 'Ворота и заборы', label: 'Ворота и заборы' },
+    ],
+  });
+
+  const { setPortfolioFilter } = useAppContext();
+  const { openModal } = useModal();
+
+  useEffect(() => {
+    if (activeCategory === 'all') {
+      setPortfolioFilter('all');
+    } else {
+      setPortfolioFilter(activeCategory as any);
+    }
+  }, [activeCategory, setPortfolioFilter]);
+
+  const handleProjectDetailsClick = () => {
+    openModal('project-details', {
+      projectId: '8',
+      projectName: 'Металлоконструкции с порошковой покраской',
+      projectDescription: 'Заказчик обратился по техническому заданию на изготовление металлоконструкций с последующей порошковой покраской. Мы выполнили полный цикл: изготовление по чертежам, пескоструйную подготовку, окрашивание в RAL 6005 (травяной зелёный), финальную упаковку и отгрузку. Весь процесс задокументирован на фото.',
+      projectImages: modalImages,
+      projectFeatures: [
+        'Полный цикл: изготовление → пескоструй → порошковая покраска',
+        'Упаковка и подготовка к отгрузке',
+        'Фотофиксация каждого этапа',
+        'Работа по ТЗ заказчика',
+        'Цвет покраски: травяной зелёный RAL 6005'
+      ],
+      projectPrice: 'по запросу',
+      projectTimeline: 'от 7 дней',
+    });
+  };
 
   return (
     <section id="portfolio" className="py-20 lg:py-28 bg-gray-50 relative overflow-hidden">
       <div className="container mx-auto px-4 lg:px-8">
+        {/* Заголовок и фильтры (без изменений) */}
         <div className="text-center max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-full px-4 py-2 mb-6">
             <span className="text-sm font-medium text-orange-700">Портфолио</span>
@@ -60,34 +135,31 @@ const Portfolio = () => {
             Каждый проект — это полный цикл производства. Смотрите, как мы превращаем идеи в надёжные металлоконструкции.
           </p>
         </div>
-        
+
         <div className="flex flex-wrap justify-center gap-2 mb-12">
-          <button className="px-5 py-2.5 rounded-full text-sm font-medium transition-all bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/25">
-            Все работы
-          </button>
-          <button className="px-5 py-2.5 rounded-full text-sm font-medium transition-all bg-white text-gray-600 hover:bg-gray-100 border border-gray-200">
-            Решётки
-          </button>
-          <button className="px-5 py-2.5 rounded-full text-sm font-medium transition-all bg-white text-gray-600 hover:bg-gray-100 border border-gray-200">
-            Перила и лестницы
-          </button>
-          <button className="px-5 py-2.5 rounded-full text-sm font-medium transition-all bg-white text-gray-600 hover:bg-gray-100 border border-gray-200">
-            Козырьки и навесы
-          </button>
-          <button className="px-5 py-2.5 rounded-full text-sm font-medium transition-all bg-white text-gray-600 hover:bg-gray-100 border border-gray-200">
-            Ворота и заборы
-          </button>
+          {availableCategories.map((category) => (
+            <Button
+              key={category.id}
+              onClick={() =>
+                category.id === 'all'
+                  ? resetFilter()
+                  : setActiveCategory(category.id)
+              }
+              variant={isCategoryActive(category.id) ? 'primary' : 'outline'}
+              size="sm"
+              className="rounded-full !ring-0 !outline-none"
+            >
+              {category.label}
+            </Button>
+          ))}
         </div>
-        
+
+        {/* Сетка проектов */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {portfolioItems.map((item) => (
+          {filteredItems.map((item) => (
             <div key={item.id} className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <div className="aspect-[4/3] relative overflow-hidden">
-                <img 
-                  src={item.image} 
-                  alt={item.title} 
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
+                <img src={item.image} alt={item.title} className="absolute inset-0 w-full h-full object-cover" />
                 <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
                   {item.tags.map((tag, index) => (
                     <span key={index} className="px-2.5 py-1 bg-white/90 backdrop-blur-sm text-xs font-medium rounded-full text-gray-700">
@@ -96,49 +168,46 @@ const Portfolio = () => {
                   ))}
                 </div>
               </div>
-              
               <div className="p-6">
                 <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
                   {item.title}
                 </h3>
                 <p className="text-sm text-gray-600 mb-4">{item.description}</p>
-                
                 <div className="flex items-center justify-between text-xs">
                   <div className="text-center flex-1">
                     <div className="font-semibold text-gray-400">До</div>
                     <div className="text-gray-500 mt-1 hidden sm:block">
-                      {item.id === 1 ? "Голый сварной каркас" : 
-                       item.id === 2 ? "Металлический каркас" :
-                       item.id === 3 ? "Сварка каркаса" :
-                       item.id === 4 ? "Рама ворот" :
-                       item.id === 5 ? "Эскиз и замеры" : "Проектирование"}
+                      {item.id === 1 ? "Отсутствие защиты" :
+                       item.id === 2 ? "Пустой проем" :
+                       item.id === 3 ? "Ржавчина на раме" :
+                       item.id === 4 ? "Неиспользуемое пространство под потолком" :
+                       item.id === 5 ? "Эскиз и замеры" : "Обычные диски"}
                     </div>
                   </div>
                   <div className="text-center flex-1">
                     <div className="font-semibold text-gray-400">Процесс</div>
                     <div className="text-gray-500 mt-1 hidden sm:block">
-                      {item.id === 1 ? "Порошковая покраска" :
-                       item.id === 2 ? "Покраска под дерево" :
-                       item.id === 3 ? "Покраска RAL 7016" :
-                       item.id === 4 ? "Покраска и сборка" :
-                       item.id === 5 ? "Изготовление и покраска" : "Сварка и покраска"}
+                      {item.id === 1 ? "Изготовление решетки" :
+                       item.id === 2 ? "Изготовление и монтаж" :
+                       item.id === 3 ? "Очистка и покраска" :
+                       item.id === 4 ? "Монтаж перекрытий" :
+                       item.id === 5 ? "Изготовление и покраска" : "Очистка и покраска"}
                     </div>
                   </div>
                   <div className="text-center flex-1">
                     <div className="font-semibold text-orange-500">Результат</div>
                     <div className="text-gray-500 mt-1 hidden sm:block">
-                      {item.id === 1 ? "Установка на объекте" :
-                       item.id === 2 ? "Готовые перила" :
-                       item.id === 3 ? "Монтаж на фасад" :
-                       item.id === 4 ? "Установка автоматики" :
-                       item.id === 5 ? "Установка на окна" : "Монтаж конструкции"}
+                      {item.id === 1 ? "Монтаж в офис Мегафон" :
+                       item.id === 2 ? "Готовый элемент здания" :
+                       item.id === 3 ? "Красивая рама" :
+                       item.id === 4 ? "Готовый каркас для второго этажа" :
+                       item.id === 5 ? "Готовое подстолье" : "Красивые диски"}
                     </div>
                   </div>
                 </div>
-                
                 <div className="flex items-center gap-1 mt-3">
                   <div className="h-1.5 flex-1 rounded-full bg-gradient-to-r from-orange-400 to-orange-500"></div>
-                  <svg className="w-3 h-3 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg className="w-3 h-3 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M5 12h14M12 5l7 7-7 7"></path>
                   </svg>
                   <div className="h-1.5 flex-1 rounded-full bg-gradient-to-r from-orange-400 to-orange-500"></div>
@@ -147,50 +216,29 @@ const Portfolio = () => {
             </div>
           ))}
         </div>
-        
+
+        {/* Кейс-стади с одним итоговым фото */}
         <div className="mt-16 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl p-8 lg:p-12 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl"></div>
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 relative z-10">
-            <div className="aspect-video rounded-2xl relative overflow-hidden">
-              <img 
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVcJtA-ACnnL8hZ26ppuTdQ0of7T-v30ef1RxDfqBjhGeSxND3KT9VgzmXg4iznJPPS_-4zSLPcFJ9l-9nnKI1B52n7Pil7bE&s&ec=121644734seed/officecase/800/450" 
-                alt="Защита окон офисного здания" 
-                className="absolute inset-0 w-full h-full object-cover" 
-              />
+            <div className="aspect-video rounded-2xl overflow-hidden">
+              <img src="/images/case_main.jpeg" alt="Готовые металлоконструкции" className="w-full h-full object-cover" />
             </div>
-            
             <div>
               <div className="inline-flex items-center gap-2 bg-orange-500/20 border border-orange-500/30 rounded-full px-4 py-2 mb-4">
                 <span className="text-sm font-medium text-orange-300">Кейс-стади</span>
               </div>
-              <h3 className="text-2xl lg:text-3xl font-bold text-white mb-4">Защита окон офисного здания</h3>
+              <h3 className="text-2xl lg:text-3xl font-bold text-white mb-4">Металлоконструкции под заказ</h3>
               <p className="text-gray-300 mb-6 leading-relaxed">
-                Заказчику требовалась защита окон офиса на первом этаже с сохранением эстетичного вида фасада. 
-                Мы спроектировали решётки, усилили сварные швы, подобрали цвет по фасаду и покрыли порошковой краской, 
-                устойчивой к царапинам.
+                Заказчик обратился по ТЗ на изготовление металлоконструкций с порошковой покраской.
+                Полный цикл: изготовление, пескоструй, покраска (травяной зелёный RAL 6005), упаковка и отгрузка.
               </p>
-              
               <div className="grid grid-cols-3 gap-4 mb-6">
-                <div>
-                  <div className="text-2xl font-bold text-orange-400">24</div>
-                  <div className="text-xs text-gray-400">решётки</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-orange-400">5 дней</div>
-                  <div className="text-xs text-gray-400">срок работ</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-orange-400">20 лет</div>
-                  <div className="text-xs text-gray-400">гарантия</div>
-                </div>
+                <div><div className="text-2xl font-bold text-orange-400">1 партия</div><div className="text-xs text-gray-400">металлоконструкций</div></div>
+                <div><div className="text-2xl font-bold text-orange-400">7 дней</div><div className="text-xs text-gray-400">срок работ</div></div>
+                <div><div className="text-2xl font-bold text-orange-400">1 год</div><div className="text-xs text-gray-400">гарантия</div></div>
               </div>
-              
-              <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-xl shadow-orange-500/25">
-                Подробнее о проекте
-                <svg className="w-5 h-5 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M12 5l7 7-7 7"></path>
-                </svg>
-              </button>
+              <Button onClick={handleProjectDetailsClick} variant="primary" size="lg" rounded="md">Подробнее о проекте</Button>
             </div>
           </div>
         </div>

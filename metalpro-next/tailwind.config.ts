@@ -29,7 +29,7 @@ const config: Config = {
         'fade-in': 'fadeIn 1s ease-out',
         'float': 'float 3s ease-in-out infinite',
         'spark': 'spark 2s ease-in-out infinite',
-        'scroll': 'scroll 30s linear infinite',
+        'scroll': 'scroll 10s linear infinite',
         'bounce': 'bounce 2s infinite',
       },
       keyframes: {

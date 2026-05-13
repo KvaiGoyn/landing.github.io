@@ -1,6 +1,23 @@
+'use client';
+
 import React from 'react';
+import { useScrollTo } from '@/app/hooks/useScrollTo';
+import { useModal } from '@/app/context/AppContext';
+import { SECTION_IDS } from '@/app/constants/sections';
+import { Button } from '@/app/components/ui/Button/Button';
 
 const Services = () => {
+  const { scrollToSection } = useScrollTo();
+  const { openModal } = useModal();
+
+  const handleConsultationClick = () => {
+    // Согласно требованиям: скролл к секции contact или открытие формы консультации
+    // Выбираем открытие модального окна консультации
+    openModal('consultation');
+    // Альтернативно можно скроллить к контактам:
+    // scrollToSection(SECTION_IDS.CONTACTS, { behavior: 'smooth' });
+  };
+
   return (
     <section id="services" className="py-20 lg:py-28 bg-white relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
@@ -227,12 +244,19 @@ const Services = () => {
           <p className="text-gray-600 mb-6">
             Не знаете, какая услуга вам нужна? Оставьте заявку — мы поможем подобрать оптимальное решение
           </p>
-          <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-xl shadow-orange-500/25">
+          <Button
+            onClick={handleConsultationClick}
+            variant="primary"
+            size="lg"
+            rounded="lg"
+            rightIcon={
+              <svg className="w-5 h-5 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"></path>
+              </svg>
+            }
+          >
             Получить консультацию
-            <svg className="w-5 h-5 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 12h14M12 5l7 7-7 7"></path>
-            </svg>
-          </button>
+          </Button>
         </div>
       </div>
     </section>

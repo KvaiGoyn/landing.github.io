@@ -1,6 +1,27 @@
+'use client';
+
 import React from 'react';
+import { useModal } from '@/app/context/AppContext';
+import { Button } from '@/app/components/ui/Button/Button';
 
 const Pricing = () => {
+  const { openModal } = useModal();
+
+  const handleOrderWelding = () => {
+    openModal('order', { service: 'Сварочные работы' });
+  };
+
+  const handleOrderPainting = () => {
+    openModal('order', { service: 'Порошковая покраска' });
+  };
+
+  const handleOrderGrates = () => {
+    openModal('order', { service: 'Антивандальные решётки' });
+  };
+
+  const handleCallMeasurer = () => {
+    openModal('measurement');
+  };
   return (
     <section id="pricing" className="py-20 lg:py-28 bg-white relative overflow-hidden">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-orange-50 rounded-full blur-3xl opacity-50"></div>
@@ -70,9 +91,15 @@ const Pricing = () => {
                 </li>
               </ul>
               
-              <button className="w-full inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-primary/90 h-10 rounded-md px-4 has-[>svg]:px-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg shadow-orange-500/25">
+              <Button
+                onClick={handleOrderWelding}
+                variant="primary"
+                size="md"
+                fullWidth
+                rounded="md"
+              >
                 Заказать сварку
-              </button>
+              </Button>
             </div>
           </div>
           
@@ -123,9 +150,15 @@ const Pricing = () => {
                 </li>
               </ul>
               
-              <button className="w-full inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-4 has-[>svg]:px-3 border-2 border-gray-300 hover:border-gray-400 text-gray-700">
+              <Button
+                onClick={handleOrderPainting}
+                variant="outline"
+                size="md"
+                fullWidth
+                rounded="md"
+              >
                 Заказать покраску
-              </button>
+              </Button>
             </div>
           </div>
           
@@ -176,9 +209,15 @@ const Pricing = () => {
                 </li>
               </ul>
               
-              <button className="w-full inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-4 has-[>svg]:px-3 border-2 border-gray-300 hover:border-gray-400 text-gray-700">
+              <Button
+                onClick={handleOrderGrates}
+                variant="outline"
+                size="md"
+                fullWidth
+                rounded="md"
+              >
                 Заказать решётки
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -230,12 +269,19 @@ const Pricing = () => {
           <div className="relative z-10">
             <h3 className="text-2xl font-bold text-white mb-2">Нужен точный расчёт?</h3>
             <p className="text-gray-300 mb-6">Закажите бесплатный выезд замерщика — получите смету в течение 24 часов</p>
-            <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-xl shadow-orange-500/25">
+            <Button
+              onClick={handleCallMeasurer}
+              variant="primary"
+              size="lg"
+              rounded="md"
+              rightIcon={
+                <svg className="w-5 h-5 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"></path>
+                </svg>
+              }
+            >
               Вызвать замерщика бесплатно
-              <svg className="w-5 h-5 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M12 5l7 7-7 7"></path>
-              </svg>
-            </button>
+            </Button>
           </div>
         </div>
       </div>

@@ -1,6 +1,28 @@
+'use client';
+
 import React from 'react';
+import { useScrollTo } from '@/app/hooks/useScrollTo';
+import { useModal } from '@/app/context/AppContext';
+import { SECTION_IDS } from '@/app/constants/sections';
+import { Button } from '@/app/components/ui/Button/Button';
 
 const Hero = () => {
+  const { scrollToSection } = useScrollTo();
+  const { openModal } = useModal();
+
+  const handlePortfolioClick = () => {
+    scrollToSection(SECTION_IDS.PORTFOLIO, { 
+      behavior: 'smooth',
+      block: 'start',
+      inline: 'nearest'
+    });
+  };
+
+  const handleCalculationClick = () => {
+    // Открываем модальное окно расчета стоимости
+    openModal('calculation');
+  };
+
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100">
       <div className="absolute inset-0 overflow-hidden">
@@ -25,7 +47,7 @@ const Hero = () => {
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
-              Полный цикл производства <span className="gradient-text">металлоизделий</span>: от сварки до антивандальной защиты
+              Полный цикл производства <span className="gradient-text">металлоизделий</span>: от сварки до покраски и монтажа 
             </h1>
             
             <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
@@ -47,7 +69,7 @@ const Hero = () => {
                     <path d="M20 6L9 17l-5-5"></path>
                   </svg>
                 </div>
-                Рассрочка 0%
+                Возможность купить в кредит
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
@@ -60,25 +82,38 @@ const Hero = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-xl shadow-orange-500/25 group">
+              <Button
+                onClick={handleCalculationClick}
+                variant="primary"
+                size="lg"
+                rounded="lg"
+                rightIcon={
+                  <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7"></path>
+                  </svg>
+                }
+                className="group"
+              >
                 Рассчитать стоимость
-                <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M12 5l7 7-7 7"></path>
-                </svg>
-              </button>
-              <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 border-2 border-gray-300 hover:border-gray-400 text-gray-700">
+              </Button>
+              <Button
+                onClick={handlePortfolioClick}
+                variant="outline"
+                size="lg"
+                rounded="lg"
+              >
                 Смотреть портфолио
-              </button>
+              </Button>
             </div>
             
             <div className="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-gray-200">
               <div>
-                <div className="text-3xl md:text-4xl font-bold text-gray-900">15+</div>
+                <div className="text-3xl md:text-4xl font-bold text-gray-900">9</div>
                 <div className="text-sm text-gray-500 mt-1">лет на рынке</div>
               </div>
               <div>
-                <div className="text-3xl md:text-4xl font-bold text-gray-900">2 500+</div>
-                <div className="text-sm text-gray-500 mt-1">выполненных заказов</div>
+                <div className="text-3xl md:text-4xl font-bold text-gray-900">1500 +</div>
+                <div className="text-sm text-gray-500 mt-1">заказов выполнено</div>
               </div>
               <div>
                 <div className="text-3xl md:text-4xl font-bold text-gray-900">98%</div>
@@ -92,10 +127,13 @@ const Hero = () => {
               <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-gray-500/10 rounded-3xl transform rotate-3"></div>
               <div className="relative bg-white rounded-3xl shadow-2xl p-8 overflow-hidden">
                 <div className="aspect-[4/3] rounded-2xl relative overflow-hidden">
-                  <img
-                    src="/images/placeholder_image.jpg"
-                    alt="Производство металлоконструкций"
+                  <video
+                    src="/images/placeholder.mp4"
                     className="absolute inset-0 w-full h-full object-cover"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
                   />
                 </div>
                 <div className="flex flex-wrap gap-2 mt-6">
