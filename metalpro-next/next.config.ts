@@ -2,8 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'export',
-  basePath: '',
-  assetPrefix: '',
+  basePath: '/landing.github.io',
+  assetPrefix: '/landing.github.io',
+  trailingSlash: true,
   images: {
     unoptimized: true,
   },
