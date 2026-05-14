@@ -12,7 +12,7 @@ interface Testimonial {
   rating: number;
 }
 
-type PaddedTestimonial = (Testimonial & { isEmpty?: boolean }) | { isEmpty: true };
+type PaddedTestimonial = Testimonial | { isEmpty: boolean };
 
 // Компонент-заглушка для аватара
 const AvatarPlaceholder = ({ name }: { name: string }) => (
@@ -33,7 +33,7 @@ const TestimonialCard = ({
     return <div className="bg-transparent p-6 h-full invisible" aria-hidden="true" />;
   }
 
-  // После проверки TypeScript знает, что testimonial имеет свойства Testimonial
+  // После проверки isEmpty, утверждаем, что testimonial - это Testimonial
   const t = testimonial as Testimonial;
 
   return (
@@ -219,11 +219,7 @@ const Testimonials = () => {
   ];
 
   // Добавляем пустые слайды-заглушки по бокам для десктопной карусели (по одному с каждой стороны)
-  const paddedTestimonials: PaddedTestimonial[] = [
-    { isEmpty: true } as PaddedTestimonial,
-    ...testimonials,
-    { isEmpty: true } as PaddedTestimonial,
-  ];
+  const paddedTestimonials = [{ isEmpty: true }, ...testimonials, { isEmpty: true }];
 
   // Для десктопа центральный слайд имеет индекс = первый_видимый + 1
   const centerIndex = desktopFirstIndex + 1;
@@ -302,7 +298,7 @@ const Testimonials = () => {
               <CarouselSlide key={idx}>
                 <TestimonialCard
                   testimonial={testimonial}
-                  isActive={idx === centerIndex && !('isEmpty' in testimonial && testimonial.isEmpty)}
+                  isActive={!('isEmpty' in testimonial && testimonial.isEmpty) && idx === centerIndex}
                 />
               </CarouselSlide>
             ))}
