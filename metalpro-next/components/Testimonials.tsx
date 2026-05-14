@@ -12,9 +12,7 @@ interface Testimonial {
   rating: number;
 }
 
-interface PaddedTestimonial extends Testimonial {
-  isEmpty?: boolean;
-}
+type PaddedTestimonial = (Testimonial & { isEmpty?: boolean }) | { isEmpty: true };
 
 // Компонент-заглушка для аватара
 const AvatarPlaceholder = ({ name }: { name: string }) => (
@@ -28,12 +26,15 @@ const TestimonialCard = ({
   testimonial,
   isActive = false,
 }: {
-  testimonial: PaddedTestimonial | Testimonial;
+  testimonial: PaddedTestimonial;
   isActive?: boolean;
 }) => {
-  if (testimonial.isEmpty) {
+  if ('isEmpty' in testimonial && testimonial.isEmpty) {
     return <div className="bg-transparent p-6 h-full invisible" aria-hidden="true" />;
   }
+
+  // После проверки TypeScript знает, что testimonial имеет свойства Testimonial
+  const t = testimonial as Testimonial;
 
   return (
     <div
@@ -51,7 +52,7 @@ const TestimonialCard = ({
           <svg
             key={i}
             className={`w-5 h-5 ${
-              i < testimonial.rating ? 'text-yellow-400' : 'text-gray-200'
+              i < t.rating ? 'text-yellow-400' : 'text-gray-200'
             }`}
             viewBox="0 0 24 24"
             fill="currentColor"
@@ -66,14 +67,14 @@ const TestimonialCard = ({
       </div>
 
       <p className="text-gray-700 leading-relaxed mb-6 text-sm flex-grow">
-        “{testimonial.text}”
+        “{t.text}”
       </p>
 
       <div className="flex items-center gap-3">
-        {testimonial.avatar ? (
+        {t.avatar ? (
           <img
-            src={testimonial.avatar}
-            alt={testimonial.name}
+            src={t.avatar}
+            alt={t.name}
             className="w-12 h-12 rounded-full object-cover"
             onError={(e) => {
               e.currentTarget.style.display = 'none';
@@ -81,7 +82,7 @@ const TestimonialCard = ({
               if (parent && !parent.querySelector('.fallback-avatar')) {
                 const fallback = document.createElement('div');
                 fallback.className = 'fallback-avatar';
-                fallback.textContent = testimonial.name.charAt(0);
+                fallback.textContent = t.name.charAt(0);
                 fallback.classList.add(
                   'w-12',
                   'h-12',
@@ -101,11 +102,11 @@ const TestimonialCard = ({
             }}
           />
         ) : (
-          <AvatarPlaceholder name={testimonial.name} />
+          <AvatarPlaceholder name={t.name} />
         )}
         <div>
-          <div className="font-semibold text-gray-900">{testimonial.name}</div>
-          <div className="text-sm text-gray-500">{testimonial.role}</div>
+          <div className="font-semibold text-gray-900">{t.name}</div>
+          <div className="text-sm text-gray-500">{t.role}</div>
         </div>
       </div>
     </div>
@@ -218,7 +219,11 @@ const Testimonials = () => {
   ];
 
   // Добавляем пустые слайды-заглушки по бокам для десктопной карусели (по одному с каждой стороны)
-  const paddedTestimonials = [{ isEmpty: true }, ...testimonials, { isEmpty: true }];
+  const paddedTestimonials: PaddedTestimonial[] = [
+    { isEmpty: true } as PaddedTestimonial,
+    ...testimonials,
+    { isEmpty: true } as PaddedTestimonial,
+  ];
 
   // Для десктопа центральный слайд имеет индекс = первый_видимый + 1
   const centerIndex = desktopFirstIndex + 1;
@@ -297,7 +302,7 @@ const Testimonials = () => {
               <CarouselSlide key={idx}>
                 <TestimonialCard
                   testimonial={testimonial}
-                  isActive={!testimonial.isEmpty && idx === centerIndex}
+                  isActive={idx === centerIndex && !('isEmpty' in testimonial && testimonial.isEmpty)}
                 />
               </CarouselSlide>
             ))}
