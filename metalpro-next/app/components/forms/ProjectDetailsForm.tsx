@@ -53,6 +53,8 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                 src={images[activeImageIndex]}
                 alt={projectName}
                 className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
             </div>
 
@@ -68,7 +70,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                         : 'border-white/20 opacity-60 hover:opacity-100'
                     }`}
                   >
-                    <img src={img} alt="" className="aspect-square object-cover w-full" />
+                    <img src={img} alt="" className="aspect-square object-cover w-full" loading="lazy" decoding="async" />
                   </button>
                 ))}
               </div>

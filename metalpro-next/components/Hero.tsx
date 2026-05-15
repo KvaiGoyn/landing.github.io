@@ -128,13 +128,18 @@ const Hero = () => {
               <div className="relative bg-white rounded-3xl shadow-2xl p-8 overflow-hidden">
                 <div className="aspect-[4/3] rounded-2xl relative overflow-hidden">
                   <video
-                    src="/images/Hero.mp4"
                     className="absolute inset-0 w-full h-full object-cover"
                     autoPlay
                     muted
                     loop
                     playsInline
-                  />
+                    preload="metadata"
+                    poster="/images/placeholder_image.jpg"
+                  >
+                    <source src="/images/Hero_optimized.webm" type="video/webm" />
+                    <source src="/images/Hero_optimized.mp4" type="video/mp4" />
+                    Ваш браузер не поддерживает видео.
+                  </video>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-6">
                   <span className="px-3 py-1 bg-orange-50 text-orange-700 text-sm rounded-full font-medium">Сварка</span>

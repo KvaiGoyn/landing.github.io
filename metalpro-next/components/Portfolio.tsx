@@ -222,7 +222,13 @@ const Portfolio = () => {
           <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl"></div>
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 relative z-10">
             <div className="aspect-video rounded-2xl overflow-hidden">
-              <img src="/images/case_main.jpeg" alt="Готовые металлоконструкции" className="w-full h-full object-cover" />
+              <img
+                src="/images/case_main.jpeg"
+                alt="Готовые металлоконструкции"
+                className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
+              />
             </div>
             <div>
               <div className="inline-flex items-center gap-2 bg-orange-500/20 border border-orange-500/30 rounded-full px-4 py-2 mb-4">

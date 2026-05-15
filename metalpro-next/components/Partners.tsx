@@ -106,10 +106,7 @@ const Partners = () => {
             <div className="text-2xl md:text-3xl font-bold text-gray-900">9</div>
             <div className="text-sm text-gray-500">лет на рынке</div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl md:text-3xl font-bold text-gray-900">0</div>
-            <div className="text-sm text-gray-500">судебных разбирательств</div>
-          </div>
+          
         </div>
       </div>
     </section>
