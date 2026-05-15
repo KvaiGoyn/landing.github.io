@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "export": "next build",
-    "deploy": "npm run build && npm run fix-paths && npx gh-pages -d out",
-    "fix-paths": "cd out && sed -i 's|src=\"/images/|src=\"/landing.github.io/images/|g' index.html && sed -i 's|href=\"/images/|href=\"/landing.github.io/images/|g' index.html && sed -i 's|src=\"/logo.svg|src=\"/landing.github.io/logo.svg|g' index.html && sed -i 's|href=\"/logo.svg|href=\"/landing.github.io/logo.svg|g' index.html"
+    "deploy": "npm run build && npx gh-pages -d out"
   },
   "dependencies": {
     "next": "16.2.4",
