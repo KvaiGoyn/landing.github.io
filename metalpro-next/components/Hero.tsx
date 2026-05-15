@@ -128,7 +128,7 @@ const Hero = () => {
               <div className="relative bg-white rounded-3xl shadow-2xl p-8 overflow-hidden">
                 <div className="aspect-[4/3] rounded-2xl relative overflow-hidden">
                   <video
-                    src="/images/placeholder.mp4"
+                    src="/images/Hero.mp4"
                     className="absolute inset-0 w-full h-full object-cover"
                     autoPlay
                     muted
