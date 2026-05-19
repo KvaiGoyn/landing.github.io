@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useModal } from '@/app/context/AppContext';
+import { useModal } from '@/app/context/ModalContext';
 import { useNavigationScroll } from '@/app/hooks/useScrollTo';
 import { SECTION_IDS } from '@/app/constants/sections';
 import { Button } from '@/app/components/ui/Button/Button';

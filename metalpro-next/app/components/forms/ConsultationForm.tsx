@@ -1,12 +1,59 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useModal } from '@/app/context/AppContext';
+import React from 'react';
+import { useModal } from '@/app/context/ModalContext';
+import { Button } from '@/app/components/ui/Button/Button';
+import { useForm, validationRules } from '@/app/hooks/useForm';
 
 interface ConsultationFormProps {
   onSuccess?: () => void;
   compact?: boolean;
   defaultService?: string;
+}
+
+interface ConsultationFormValues {
+  name: string;
+  phone: string;
+  service: string;
+  details: string;
+  agree: boolean;
+}
+
+const services = [
+  { value: 'Сварка металлоконструкций', label: 'Сварка металлоконструкций' },
+  { value: 'Изготовление ворот и заборов', label: 'Изготовление ворот и заборов' },
+  { value: 'Покраска металла', label: 'Покраска металла' },
+  { value: 'Изготовление перил и ограждений', label: 'Изготовление перил и ограждений' },
+  { value: 'Навесы и козырьки', label: 'Навесы и козырьки' },
+  { value: 'Металлическая мебель', label: 'Металлическая мебель' },
+  { value: 'Другое', label: 'Другое' },
+];
+
+/**
+ * Отправка формы консультации через FormSubmit
+ */
+async function submitConsultationForm(values: ConsultationFormValues): Promise<void> {
+  const formDataToSend = new FormData();
+  formDataToSend.append('name', values.name);
+  formDataToSend.append('phone', values.phone);
+  formDataToSend.append('service', values.service);
+  formDataToSend.append('details', values.details);
+  formDataToSend.append('agree', values.agree ? 'yes' : 'no');
+  // Hidden fields
+  formDataToSend.append('_subject', 'Заявка на консультацию с лендинга MetalPro');
+  formDataToSend.append('_captcha', 'false');
+  formDataToSend.append('_template', 'table');
+
+  const response = await fetch('https://formsubmit.co/ajax/nezabut123@gmail.com', {
+    method: 'POST',
+    body: formDataToSend,
+  });
+
+  const data = await response.json();
+
+  if (!(data.success === 'true' || data.success === true)) {
+    throw new Error('Ошибка при отправке формы. Пожалуйста, попробуйте ещё раз.');
+  }
 }
 
 const ConsultationForm: React.FC<ConsultationFormProps> = ({ 
@@ -15,136 +62,76 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
   defaultService = ''
 }) => {
   const { closeModal } = useModal();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    service: defaultService || '',
-    details: '',
-    agree: false,
+
+  const {
+    values,
+    errors,
+    isSubmitting,
+    isSuccess,
+    submitError,
+    handleChange,
+    handleSubmit,
+    getCheckboxProps,
+    formProps,
+  } = useForm<ConsultationFormValues>({
+    fields: {
+      name: {
+        initialValue: '',
+        required: true,
+        rules: [
+          validationRules.required('Введите ваше имя'),
+          validationRules.minLength(2, 'Имя должно содержать минимум 2 символа'),
+        ],
+      },
+      phone: {
+        initialValue: '',
+        required: true,
+        rules: [
+          validationRules.required('Введите ваш телефон'),
+          validationRules.phone('Введите корректный номер телефона'),
+        ],
+      },
+      service: {
+        initialValue: defaultService || '',
+        required: true,
+        rules: [
+          validationRules.required('Выберите услугу'),
+        ],
+      },
+      details: {
+        initialValue: '',
+        required: false,
+        rules: [
+          validationRules.maxLength(1000, 'Описание не должно превышать 1000 символов'),
+        ],
+      },
+      agree: {
+        initialValue: false,
+        required: true,
+        rules: [
+          {
+            validator: (value) => value === true,
+            message: 'Необходимо согласие на обработку персональных данных',
+          },
+        ],
+      },
+    },
+    onSubmit: async (values) => {
+      await submitConsultationForm(values);
+    },
+    onSuccess: (values) => {
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        closeModal();
+        alert('Заявка на консультацию успешно отправлена! Наш специалист свяжется с вами в ближайшее время.');
+      }
+    },
+    onError: (error) => {
+      console.error('Form submission error:', error);
+    },
+    debounceSubmit: 500,
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const services = [
-    { value: 'Сварка металлоконструкций', label: 'Сварка металлоконструкций' },
-    { value: 'Изготовление ворот и заборов', label: 'Изготовление ворот и заборов' },
-    { value: 'Покраска металла', label: 'Покраска металла' },
-    { value: 'Изготовление перил и ограждений', label: 'Изготовление перил и ограждений' },
-    { value: 'Навесы и козырьки', label: 'Навесы и козырьки' },
-    { value: 'Металлическая мебель', label: 'Металлическая мебель' },
-    { value: 'Другое', label: 'Другое' },
-  ];
-
-  const validate = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = 'Введите ваше имя';
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'Имя должно содержать минимум 2 символа';
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Введите ваш телефон';
-    } else if (!/^[\d\s\-\+\(\)]{10,}$/.test(formData.phone.replace(/\D/g, ''))) {
-      newErrors.phone = 'Введите корректный номер телефона';
-    }
-
-    if (!formData.service.trim()) {
-      newErrors.service = 'Выберите услугу';
-    }
-
-    if (formData.details && formData.details.length > 1000) {
-      newErrors.details = 'Описание не должно превышать 1000 символов';
-    }
-
-    if (!formData.agree) {
-      newErrors.agree = 'Необходимо согласие на обработку персональных данных';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    const checked = (e.target as HTMLInputElement).checked;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitError(null);
-
-    if (!validate()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    // Prepare form data for FormSubmit AJAX
-    const formDataToSend = new FormData();
-    formDataToSend.append('name', formData.name);
-    formDataToSend.append('phone', formData.phone);
-    formDataToSend.append('service', formData.service);
-    formDataToSend.append('details', formData.details);
-    formDataToSend.append('agree', formData.agree ? 'yes' : 'no');
-    // Hidden fields
-    formDataToSend.append('_subject', 'Заявка на консультацию с лендинга MetalPro');
-    formDataToSend.append('_captcha', 'false');
-    formDataToSend.append('_template', 'table');
-    // Optional: add _next if you have a thank you page
-    // formDataToSend.append('_next', 'https://yourdomain.com/thanks');
-
-    // Log form data for debugging
-    console.log('ConsultationForm submitting to FormSubmit:', {
-      name: formData.name,
-      phone: formData.phone,
-      service: formData.service,
-      details: formData.details,
-      agree: formData.agree,
-    });
-
-    // AJAX submission to FormSubmit
-    fetch('https://formsubmit.co/ajax/nezabut123@gmail.com', {
-      method: 'POST',
-      body: formDataToSend,
-    })
-      .then(response => {
-        console.log('FormSubmit response status:', response.status, response.ok);
-        return response.json();
-      })
-      .then(data => {
-        console.log('FormSubmit response data:', data);
-        setIsSubmitting(false);
-        if (data.success === 'true' || data.success === true) {
-          setIsSuccess(true);
-          if (onSuccess) {
-            onSuccess();
-          } else {
-            closeModal();
-            alert('Заявка на консультацию успешно отправлена! Наш специалист свяжется с вами в ближайшее время.');
-          }
-        } else {
-          console.warn('FormSubmit reported failure:', data);
-          setSubmitError('Ошибка при отправке формы. Пожалуйста, попробуйте ещё раз.');
-        }
-      })
-      .catch(error => {
-        setIsSubmitting(false);
-        console.error('FormSubmit error details:', error);
-        setSubmitError('Произошла ошибка сети. Пожалуйста, проверьте подключение и попробуйте ещё раз.');
-      });
-  };
 
   if (isSuccess) {
     return (
@@ -159,12 +146,14 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
         <p className="text-gray-600 mb-6">
           Наш специалист свяжется с вами для консультации по выбранной услуге.
         </p>
-        <button
+        <Button
           onClick={closeModal}
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-orange-500 text-white font-medium hover:bg-orange-600 transition-colors"
+          variant="primary"
+          size="md"
+          rounded="lg"
         >
           Закрыть
-        </button>
+        </Button>
       </div>
     );
   }
@@ -178,7 +167,7 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
       <form 
         action="https://formsubmit.co/nezabut123@gmail.com" 
         method="POST"
-        onSubmit={handleSubmit}
+        {...formProps}
         className="space-y-4"
       >
         {/* Скрытые поля для настройки FormSubmit */}
@@ -195,8 +184,8 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
             <input
               type="text"
               name="name"
-              value={formData.name}
-              onChange={handleChange}
+              value={values.name}
+              onChange={handleChange('name')}
               className={`w-full px-4 py-3 rounded-lg border ${errors.name ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' : 'border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200'} outline-none transition-colors`}
               placeholder="Ваше имя"
               disabled={isSubmitting}
@@ -212,8 +201,8 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
             <input
               type="tel"
               name="phone"
-              value={formData.phone}
-              onChange={handleChange}
+              value={values.phone}
+              onChange={handleChange('phone')}
               className={`w-full px-4 py-3 rounded-lg border ${errors.phone ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' : 'border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200'} outline-none transition-colors`}
               placeholder="+7 (___) ___-__-__"
               disabled={isSubmitting}
@@ -230,8 +219,8 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
           </label>
           <select
             name="service"
-            value={formData.service}
-            onChange={handleChange}
+            value={values.service}
+            onChange={handleChange('service')}
             className={`w-full px-4 py-3 rounded-lg border ${errors.service ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' : 'border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200'} outline-none transition-colors`}
             disabled={isSubmitting}
           >
@@ -254,8 +243,8 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
           <textarea
             rows={4}
             name="details"
-            value={formData.details}
-            onChange={handleChange}
+            value={values.details}
+            onChange={handleChange('details')}
             className={`w-full px-4 py-3 rounded-lg border ${errors.details ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' : 'border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200'} outline-none transition-colors resize-none`}
             placeholder="Опишите вашу задачу, укажите размеры, материалы и другие детали..."
             disabled={isSubmitting}
@@ -269,9 +258,7 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
           <input
             type="checkbox"
             id="agree-consultation"
-            name="agree"
-            checked={formData.agree}
-            onChange={handleChange}
+            {...getCheckboxProps('agree')}
             className="w-4 h-4 text-orange-600 rounded focus:ring-orange-500"
             disabled={isSubmitting}
           />
@@ -289,28 +276,21 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
           </div>
         )}
         
-        <button
+        <Button
           type="submit"
-          disabled={isSubmitting}
-          className="w-full inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-primary/90 h-12 rounded-lg px-6 has-[>svg]:px-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-xl shadow-orange-500/25"
+          variant="primary"
+          size="lg"
+          fullWidth
+          rounded="lg"
+          state={isSubmitting ? 'loading' : 'default'}
+          rightIcon={
+            <svg className="w-5 h-5 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          }
         >
-          {isSubmitting ? (
-            <>
-              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Отправка...
-            </>
-          ) : (
-            <>
-              Получить консультацию
-              <svg className="w-5 h-5 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-            </>
-          )}
-        </button>
+          {isSubmitting ? 'Отправка...' : 'Получить консультацию'}
+        </Button>
         
         <p className="text-xs text-gray-500 text-center">
           Консультация бесплатна и ни к чему не обязывает

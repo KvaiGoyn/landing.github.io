@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useModal } from '@/app/context/AppContext';
+import { useModal } from '@/app/context/ModalContext';
 import { Button } from '@/app/components/ui/Button/Button';
 
 const Pricing = () => {

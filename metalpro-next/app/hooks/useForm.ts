@@ -1,31 +1,20 @@
 'use client';
 
-import { useState, useCallback, ChangeEvent, FormEvent, useRef, useEffect } from 'react';
-
-/**
- * Правила валидации для поля
- */
-export interface ValidationRule {
-  /** Проверка значения (возвращает true если валидно) */
-  validator: (value: any) => boolean;
-  /** Сообщение об ошибке */
-  message: string;
-  /** Параметры для сложных валидаций */
-  params?: Record<string, any>;
-}
+import { useState, useCallback, ChangeEvent, FormEvent, useRef, useEffect, useMemo } from 'react';
+import { ValidationRule, validationRules as commonValidationRules, validateValue } from '@/app/utils/validation';
 
 /**
  * Конфигурация поля формы
  */
-export interface FieldConfig {
+export interface FieldConfig<T = any> {
   /** Начальное значение */
-  initialValue: any;
+  initialValue: T;
   /** Правила валидации */
-  rules?: ValidationRule[];
+  rules?: ValidationRule<T>[];
   /** Обязательное ли поле */
   required?: boolean;
   /** Функция преобразования значения перед валидацией */
-  transform?: (value: any) => any;
+  transform?: (value: T) => T;
 }
 
 /**
@@ -34,22 +23,18 @@ export interface FieldConfig {
 export interface FormConfig<T extends Record<string, any>> {
   /** Конфигурация полей */
   fields: {
-    [K in keyof T]: FieldConfig;
+    [K in keyof T]: FieldConfig<T[K]>;
   };
   /** Функция отправки формы */
   onSubmit: (values: T) => Promise<void> | void;
   /** Валидация всей формы */
-  validateForm?: (values: T) => Record<keyof T, string> | null;
+  validateForm?: (values: T) => Partial<Record<keyof T, string>> | null;
   /** Колбэк при успешной отправке */
   onSuccess?: (values: T) => void;
   /** Колбэк при ошибке */
   onError?: (error: any) => void;
-  /** Максимальное количество попыток повторной отправки при ошибках сети */
-  maxRetries?: number;
-  /** Начальная задержка между попытками в мс */
-  retryDelay?: number;
-  /** Включить ли автоматическую повторную отправку при сетевых ошибках */
-  enableRetry?: boolean;
+  /** Включить ли дебаунс для предотвращения множественных отправок (мс) */
+  debounceSubmit?: number;
 }
 
 /**
@@ -68,10 +53,6 @@ export interface FormState<T extends Record<string, any>> {
   submitError: string | null;
   /** Были ли поля затронуты (touched) */
   touched: Partial<Record<keyof T, boolean>>;
-  /** Количество выполненных попыток отправки */
-  retryCount: number;
-  /** Является ли текущая отправка повторной попыткой */
-  isRetrying: boolean;
 }
 
 /**
@@ -81,13 +62,15 @@ export interface FormState<T extends Record<string, any>> {
  */
 export function useForm<T extends Record<string, any>>(config: FormConfig<T>) {
   // Инициализация состояния
-  const initialValues = Object.entries(config.fields).reduce(
-    (acc, [key, fieldConfig]) => {
-      acc[key as keyof T] = fieldConfig.initialValue;
-      return acc;
-    },
-    {} as T
-  );
+  const initialValues = useMemo(() => {
+    return Object.entries(config.fields).reduce(
+      (acc, [key, fieldConfig]) => {
+        acc[key as keyof T] = fieldConfig.initialValue;
+        return acc;
+      },
+      {} as T
+    );
+  }, [config.fields]);
 
   const [state, setState] = useState<FormState<T>>({
     values: initialValues,
@@ -96,9 +79,10 @@ export function useForm<T extends Record<string, any>>(config: FormConfig<T>) {
     isSuccess: false,
     submitError: null,
     touched: {},
-    retryCount: 0,
-    isRetrying: false,
   });
+
+  // Референс для таймера дебаунса
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   /**
    * Валидация одного поля
@@ -118,11 +102,7 @@ export function useForm<T extends Record<string, any>>(config: FormConfig<T>) {
 
       // Проверка правил валидации
       if (fieldConfig.rules) {
-        for (const rule of fieldConfig.rules) {
-          if (!rule.validator(transformedValue)) {
-            return rule.message;
-          }
-        }
+        return validateValue(transformedValue, fieldConfig.rules);
       }
 
       return null;
@@ -160,7 +140,8 @@ export function useForm<T extends Record<string, any>>(config: FormConfig<T>) {
    */
   const handleChange = useCallback(
     (fieldName: keyof T) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-      const value = e.target.value;
+      const target = e.target;
+      const value = target.type === 'checkbox' ? (target as HTMLInputElement).checked : target.value;
       
       setState(prev => {
         const newValues = { ...prev.values, [fieldName]: value };
@@ -221,22 +202,23 @@ export function useForm<T extends Record<string, any>>(config: FormConfig<T>) {
       isSuccess: false,
       submitError: null,
       touched: {},
-      retryCount: 0,
-      isRetrying: false,
     });
   }, [initialValues]);
 
-  // Референс для таймера повторной отправки
-  const retryTimerRef = useRef<NodeJS.Timeout | null>(null);
-
   /**
-   * Обработчик отправки формы с поддержкой повторных попыток
+   * Обработчик отправки формы с дебаунсом
    */
   const handleSubmit = useCallback(
     async (e?: FormEvent) => {
       if (e) {
         e.preventDefault();
         e.stopPropagation();
+      }
+
+      // Очистка предыдущего таймера дебаунса
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = null;
       }
 
       // Валидация формы
@@ -257,21 +239,15 @@ export function useForm<T extends Record<string, any>>(config: FormConfig<T>) {
         return;
       }
 
-      // Сброс счетчика повторных попыток при новой отправке
+      // Установка состояния отправки
       setState(prev => ({
         ...prev,
         isSubmitting: true,
         submitError: null,
-        retryCount: 0,
-        isRetrying: false,
       }));
 
-      // Внутренняя функция для выполнения отправки с повторными попытками
-      const executeSubmit = async (currentRetryCount: number = 0): Promise<void> => {
-        const maxRetries = config.maxRetries ?? 3;
-        const retryDelay = config.retryDelay ?? 1000;
-        const enableRetry = config.enableRetry ?? true;
-
+      // Функция выполнения отправки с дебаунсом
+      const executeSubmit = async () => {
         try {
           await config.onSubmit(state.values);
           
@@ -280,55 +256,29 @@ export function useForm<T extends Record<string, any>>(config: FormConfig<T>) {
             ...prev,
             isSubmitting: false,
             isSuccess: true,
-            isRetrying: false,
-            retryCount: 0,
           }));
 
           config.onSuccess?.(state.values);
         } catch (error: any) {
-          const isNetworkError = error.message?.includes('Network') ||
-                                error.message?.includes('network') ||
-                                error.message?.includes('Сетевая ошибка');
+          const errorMessage = error.message || 'Произошла ошибка при отправке формы';
           
-          // Проверяем, можно ли повторить отправку
-          const canRetry = enableRetry &&
-                          isNetworkError &&
-                          currentRetryCount < maxRetries;
+          setState(prev => ({
+            ...prev,
+            isSubmitting: false,
+            submitError: errorMessage,
+          }));
 
-          if (canRetry) {
-            const nextRetryCount = currentRetryCount + 1;
-            const delay = retryDelay * Math.pow(2, currentRetryCount); // Экспоненциальная задержка
-            
-            // Устанавливаем состояние как повторная попытка
-            setState(prev => ({
-              ...prev,
-              isRetrying: true,
-              retryCount: nextRetryCount,
-              submitError: `Сетевая ошибка. Повторная попытка ${nextRetryCount}/${maxRetries} через ${delay/1000} сек...`,
-            }));
-
-            // Планируем повторную попытку
-            retryTimerRef.current = setTimeout(() => {
-              executeSubmit(nextRetryCount);
-            }, delay);
-          } else {
-            // Финальная ошибка
-            const errorMessage = error.message || 'Произошла ошибка при отправке формы';
-            
-            setState(prev => ({
-              ...prev,
-              isSubmitting: false,
-              isRetrying: false,
-              submitError: errorMessage,
-            }));
-
-            config.onError?.(error);
-          }
+          config.onError?.(error);
         }
       };
 
-      // Запускаем отправку
-      executeSubmit();
+      // Применение дебаунса если указан
+      const debounceTime = config.debounceSubmit ?? 0;
+      if (debounceTime > 0) {
+        debounceTimerRef.current = setTimeout(executeSubmit, debounceTime);
+      } else {
+        await executeSubmit();
+      }
     },
     [config, state.values, validateForm]
   );
@@ -349,12 +299,13 @@ export function useForm<T extends Record<string, any>>(config: FormConfig<T>) {
   const getFieldError = (fieldName: keyof T) => state.errors[fieldName];
 
   /**
-   * Получение пропсов для поля
+   * Получение пропсов для текстового поля (input, textarea, select)
    */
   const getFieldProps = (fieldName: keyof T) => {
+    const value = state.values[fieldName];
     return {
       name: fieldName as string,
-      value: state.values[fieldName],
+      value: typeof value === 'boolean' ? (value ? 'true' : 'false') : String(value ?? ''),
       onChange: handleChange(fieldName),
       onBlur: () => {
         if (!state.touched[fieldName]) {
@@ -370,24 +321,31 @@ export function useForm<T extends Record<string, any>>(config: FormConfig<T>) {
   };
 
   /**
-   * Функция отмены повторных попыток
+   * Получение пропсов для чекбокса
    */
-  const cancelRetry = useCallback(() => {
-    if (retryTimerRef.current) {
-      clearTimeout(retryTimerRef.current);
-      retryTimerRef.current = null;
-    }
-    setState(prev => ({
-      ...prev,
-      isRetrying: false,
-    }));
-  }, []);
+  const getCheckboxProps = (fieldName: keyof T) => {
+    return {
+      name: fieldName as string,
+      checked: Boolean(state.values[fieldName]),
+      onChange: handleChange(fieldName),
+      onBlur: () => {
+        if (!state.touched[fieldName]) {
+          setState(prev => ({
+            ...prev,
+            touched: { ...prev.touched, [fieldName]: true },
+          }));
+        }
+      },
+      'aria-invalid': !!state.errors[fieldName],
+      'aria-describedby': state.errors[fieldName] ? `${String(fieldName)}-error` : undefined,
+    };
+  };
 
   // Очистка таймера при размонтировании компонента
   useEffect(() => {
     return () => {
-      if (retryTimerRef.current) {
-        clearTimeout(retryTimerRef.current);
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
       }
     };
   }, []);
@@ -400,8 +358,6 @@ export function useForm<T extends Record<string, any>>(config: FormConfig<T>) {
     isSuccess: state.isSuccess,
     submitError: state.submitError,
     touched: state.touched,
-    retryCount: state.retryCount,
-    isRetrying: state.isRetrying,
     
     // Методы
     handleChange,
@@ -409,13 +365,13 @@ export function useForm<T extends Record<string, any>>(config: FormConfig<T>) {
     handleSubmit,
     resetForm,
     validateForm,
-    cancelRetry,
     
     // Вспомогательные функции
     isValid,
     isFieldTouched,
     getFieldError,
     getFieldProps,
+    getCheckboxProps,
     
     // Пропсы для формы
     formProps: {
@@ -426,50 +382,6 @@ export function useForm<T extends Record<string, any>>(config: FormConfig<T>) {
 }
 
 /**
- * Предопределенные правила валидации
+ * Предопределенные правила валидации (реэкспорт из утилит)
  */
-export const validationRules = {
-  required: (message: string = 'Это поле обязательно для заполнения'): ValidationRule => ({
-    validator: (value) => {
-      if (typeof value === 'string') {
-        return value.trim().length > 0;
-      }
-      return value !== undefined && value !== null && value !== '';
-    },
-    message,
-  }),
-  
-  email: (message: string = 'Введите корректный email адрес'): ValidationRule => ({
-    validator: (value) => {
-      if (!value) return true; // Если поле не обязательно, пустое значение пропускаем
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(value);
-    },
-    message,
-  }),
-  
-  phone: (message: string = 'Введите корректный номер телефона'): ValidationRule => ({
-    validator: (value) => {
-      if (!value) return true;
-      const digits = value.replace(/\D/g, '');
-      return digits.length >= 10;
-    },
-    message,
-  }),
-  
-  minLength: (min: number, message?: string): ValidationRule => ({
-    validator: (value) => {
-      if (!value) return true;
-      return String(value).length >= min;
-    },
-    message: message || `Минимальная длина: ${min} символов`,
-  }),
-  
-  maxLength: (max: number, message?: string): ValidationRule => ({
-    validator: (value) => {
-      if (!value) return true;
-      return String(value).length <= max;
-    },
-    message: message || `Максимальная длина: ${max} символов`,
-  }),
-};
+export const validationRules = commonValidationRules;

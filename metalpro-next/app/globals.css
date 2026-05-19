@@ -26,6 +26,30 @@
   .animate-bounce {
     animation: bounce 2s infinite;
   }
+
+  /* Улучшение touch targets для доступности */
+  button,
+  [role="button"],
+  a[href].interactive,
+  input[type="submit"],
+  input[type="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Увеличение touch targets для маленьких кнопок */
+  .btn-touch {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.75rem 1rem;
+  }
+
+  /* Улучшение фокуса для клавиатурной навигации */
+  *:focus-visible {
+    outline: 2px solid #f97316;
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
 }
 
 @keyframes slideUp {

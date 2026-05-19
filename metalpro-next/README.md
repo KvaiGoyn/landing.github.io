@@ -1,36 +1,227 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MetalPro — Производство металлоизделий под ключ
 
-## Getting Started
+Современный веб-сайт для компании по производству металлоизделий под ключ. Проект построен на Next.js 16 с TypeScript, Tailwind CSS и современными практиками разработки.
 
-First, run the development server:
+## 🚀 Быстрый старт
 
+### Установка зависимостей
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Запуск в режиме разработки
+```bash
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Откройте [http://localhost:3000](http://localhost:3000) в браузере.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Сборка для продакшена
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+### Запуск тестов
+```bash
+npm test              # Запуск всех тестов
+npm run test:watch    # Запуск в watch-режиме
+npm run test:coverage # Запуск с покрытием кода
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 🏗️ Архитектура проекта
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Проект следует принципам модульной архитектуры с четким разделением ответственности:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+metalpro-next/
+├── app/                    # Next.js App Router
+│   ├── components/         # Компоненты приложения
+│   │   ├── forms/         # Формы заявок
+│   │   ├── ui/            # UI компоненты (Button, Modal, etc.)
+│   │   └── ModalManager.tsx
+│   ├── context/           # Контексты состояния
+│   │   ├── ModalContext.tsx
+│   │   ├── FormContext.tsx
+│   │   ├── FilterContext.tsx
+│   │   ├── UIContext.tsx
+│   │   └── AppProviders.tsx
+│   ├── hooks/             # Кастомные хуки
+│   │   ├── useForm.ts
+│   │   ├── useModal.ts
+│   │   └── usePortfolioFilter.ts
+│   ├── services/          # Сервисы (API, формы)
+│   ├── types/             # Общие TypeScript типы
+│   ├── utils/             # Утилиты
+│   ├── layout.tsx         # Корневой layout
+│   └── page.tsx           # Главная страница
+├── components/            # Страничные компоненты
+│   ├── Header.tsx
+│   ├── Hero.tsx
+│   ├── Services.tsx
+│   └── Portfolio.tsx
+├── public/                # Статические файлы
+└── tests/                 # Тесты
+```
 
-## Deploy on Vercel
+## 🎯 Ключевые особенности
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 1. **Модульная архитектура состояния**
+- Разделение монолитного `AppContext` на специализированные контексты:
+  - `ModalContext` — управление модальными окнами
+  - `FormContext` — состояние форм с useReducer
+  - `FilterContext` — фильтры портфолио
+  - `UIContext` — UI состояние (мобильное меню)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 2. **Декомпозиция компонентов**
+- Компонент `Button` (188 строк) разделен на:
+  - `ButtonIcons.tsx` — иконки состояний
+  - `useButtonClasses.ts` — логика CSS классов
+  - `Button.tsx` — основной компонент
+  - Специализированные кнопки: `PrimaryButton`, `SecondaryButton`, etc.
+
+### 3. **Типизация TypeScript**
+- Общие типы в `app/types/index.ts`
+- Замена `any` на конкретные типы
+- Улучшенные дженерики для хуков
+
+### 4. **Производительность и доступность**
+- Оптимизированные изображения и видео
+- Semantic HTML и ARIA атрибуты
+- Lazy loading для компонентов
+- Предзагрузка критических ресурсов
+
+### 5. **Тестирование**
+- Настроена Jest + React Testing Library
+- Конфигурация для покрытия кода
+- Примеры тестов для ключевых компонентов
+
+## 📱 Компоненты UI
+
+### Button Component
+Универсальный компонент кнопки с поддержкой:
+- 6 вариантов стилей (`primary`, `secondary`, `outline`, etc.)
+- 5 размеров (`xs`, `sm`, `md`, `lg`, `xl`)
+- 5 состояний (`default`, `loading`, `success`, `error`, `disabled`)
+- Иконки слева/справа
+- Полная доступность (ARIA)
+
+### Modal System
+Гибкая система модальных окон:
+- 7 типов модалок (обратный звонок, расчет стоимости и т.д.)
+- Управление через `ModalContext`
+- Блокировка скролла
+- Анимации открытия/закрытия
+
+### Формы
+8 специализированных форм с:
+- Валидацией в реальном времени
+- Состояниями загрузки/успеха/ошибки
+- Интеграцией с модальной системой
+- Моковым API для разработки
+
+## 🧪 Тестирование
+
+Проект включает полную инфраструктуру для тестирования:
+
+### Конфигурация
+- `jest.config.js` — конфигурация Jest
+- `jest.setup.js` — настройка тестового окружения
+- Моки для Next.js роутинга и шрифтов
+
+### Запуск тестов
+```bash
+# Все тесты
+npm test
+
+# Watch режим
+npm run test:watch
+
+# Покрытие кода
+npm run test:coverage
+
+# CI режим
+npm run test:ci
+```
+
+### Примеры тестов
+- Тесты компонента `Button` с проверкой состояний и доступности
+- Тесты хуков (в разработке)
+- Интеграционные тесты (в разработке)
+
+## 🔧 Разработка
+
+### Code Style
+- TypeScript с strict режимом
+- ESLint (рекомендуется настроить)
+- Prettier для форматирования
+- Компоненты с явными типами пропсов
+
+### Git Workflow
+- Feature branches
+- Semantic commit messages
+- Pull requests с ревью кода
+
+### Производительность
+- Анализ сборки: `npm run analyze`
+- Оптимизация изображений через Next.js Image
+- Code splitting для маршрутов
+
+## 📦 Деплой
+
+### На GitHub Pages
+```bash
+npm run deploy
+```
+
+### На Vercel
+Проект оптимизирован для деплоя на Vercel:
+1. Push в репозиторий GitHub
+2. Импорт в Vercel
+3. Автоматические деплои из main ветки
+
+### Настройки окружения
+Создайте `.env.local` для production:
+```env
+NEXT_PUBLIC_API_URL=https://api.metalpro.ru
+```
+
+## 📚 Документация
+
+### Компоненты
+Каждый компонент включает:
+- JSDoc комментарии
+- Примеры использования
+- Типы пропсов
+- Тесты
+
+### Архитектура
+- [ARCHITECTURE.md](ARCHITECTURE.md) — детальное описание архитектуры
+- Комментарии в коде для сложной логики
+
+## 🐛 Отладка
+
+### Dev Tools
+- React DevTools
+- Next.js DevTools
+- Tailwind CSS DevTools
+
+### Логирование
+- Консольные логи в development
+- Sentry (рекомендуется добавить)
+
+## 🤝 Вклад в проект
+
+1. Форкните репозиторий
+2. Создайте feature ветку
+3. Внесите изменения
+4. Напишите тесты
+5. Создайте Pull Request
+
+## 📄 Лицензия
+
+MIT License — подробности в файле LICENSE.
+
+---
+
+**MetalPro** © 2025 — Производство металлоизделий под ключ

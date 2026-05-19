@@ -1,9 +1,13 @@
 import type { NextConfig } from "next";
 
+const isProduction = process.env.NODE_ENV === 'production';
+const isExport = process.env.NEXT_EXPORT === 'true' || isProduction;
+
 const nextConfig: NextConfig = {
-  output: 'export',
-  basePath: '/out',
-  assetPrefix: '/out',
+  // output: 'export' только для production сборки, иначе dev сервер не работает
+  ...(isExport ? { output: 'export' } : {}),
+  basePath: isProduction ? '/landing.github.io' : '',
+  assetPrefix: isProduction ? '/landing.github.io' : '',
   trailingSlash: true,
   images: {
     unoptimized: true, // Для статического экспорта требуется true
@@ -14,8 +18,13 @@ const nextConfig: NextConfig = {
   // Оптимизация для production (автоматически включается в production)
   compiler: {
     // Включаем удаление console.log в production
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: isProduction,
   },
 };
 
-export default nextConfig;
+// Bundle analyzer для анализа размера бандла
+const withBundleAnalyzer = (process.env.ANALYZE === 'true')
+  ? require('@next/bundle-analyzer')({ enabled: true })
+  : (config: NextConfig) => config;
+
+export default withBundleAnalyzer(nextConfig);

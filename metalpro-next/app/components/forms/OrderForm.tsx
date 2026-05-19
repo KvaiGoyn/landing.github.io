@@ -3,7 +3,7 @@
 import React from 'react';
 import { useForm, validationRules } from '@/app/hooks/useForm';
 import { sendOrderForm, OrderFormData } from '@/app/services/forms';
-import { useModal } from '@/app/context/AppContext';
+import { useModal } from '@/app/context/ModalContext';
 
 interface OrderFormProps {
   onSuccess?: () => void;

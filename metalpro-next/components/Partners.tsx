@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 const Partners = () => {
   const partners = [
@@ -17,7 +18,7 @@ const Partners = () => {
     <section className="py-16 lg:py-20 bg-white border-y border-gray-100 relative overflow-hidden">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="text-center mb-12">
-          <h3 className="text-lg font-semibold text-gray-500 mb-2">Нам доверяют</h3>
+          <h2 className="text-lg font-semibold text-gray-700 mb-2">Нам доверяют</h2>
           <p className="text-gray-600">Работаем с ведущими застройщиками и компаниями</p>
         </div>
         
@@ -29,11 +30,15 @@ const Partners = () => {
             {[...partners, ...partners].map((partner, index) => (
               <div key={index} className="flex-shrink-0 flex items-center gap-4 px-6">
                 {partner.image ? (
-                  <img
-                    src={partner.image}
-                    alt={partner.name}
-                    className="w-12 h-12 rounded-lg object-contain"
-                  />
+                  <div className="relative w-12 h-12 rounded-lg overflow-hidden">
+                    <Image
+                      src={partner.image.replace('/landing.github.io', '')}
+                      alt={partner.name}
+                      fill
+                      className="object-contain"
+                      sizes="48px"
+                    />
+                  </div>
                 ) : (
                   <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
                     <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

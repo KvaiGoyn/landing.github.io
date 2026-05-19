@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useScrollTo } from '@/app/hooks/useScrollTo';
-import { useModal } from '@/app/context/AppContext';
+import { useModal } from '@/app/context/ModalContext';
 import { SECTION_IDS } from '@/app/constants/sections';
 import { Button } from '@/app/components/ui/Button/Button';
 
@@ -43,19 +43,19 @@ const Hero = () => {
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                 <path d="M9 12l2 2 4-4"></path>
               </svg>
-              <span className="text-sm font-medium text-orange-700">Гарантия качества до 20 лет</span>
+              <span className="text-sm font-medium text-orange-700">Гарантия качества работы</span>
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
               Полный цикл производства <span className="gradient-text">металлоизделий</span>: от сварки до покраски и монтажа 
             </h1>
             
-            <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
-              <span className="font-semibold text-gray-800">Сварим, покрасим, защитим.</span> Изготовим решётки, козырьки, перила и любые металлоконструкции под ключ. Один подрядчик — единая ответственность за результат.
+            <p className="text-lg md:text-xl text-gray-700 mb-8 leading-relaxed">
+              <span className="font-semibold text-gray-900">Сварим, покрасим, защитим.</span> Изготовим решётки, козырьки, перила и любые металлоконструкции под ключ. Один подрядчик — единая ответственность за результат.
             </p>
             
             <div className="flex flex-wrap gap-4 mb-8">
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2 text-sm text-gray-700">
                 <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
                   <svg className="w-3 h-3 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 6L9 17l-5-5"></path>
@@ -63,7 +63,7 @@ const Hero = () => {
                 </div>
                 Бесплатный выезд замерщика
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2 text-sm text-gray-700">
                 <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
                   <svg className="w-3 h-3 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 6L9 17l-5-5"></path>
@@ -71,7 +71,7 @@ const Hero = () => {
                 </div>
                 Возможность купить в кредит
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2 text-sm text-gray-700">
                 <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
                   <svg className="w-3 h-3 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 6L9 17l-5-5"></path>
@@ -133,8 +133,8 @@ const Hero = () => {
                     muted
                     loop
                     playsInline
-                    preload="metadata"
-                    poster="/images/placeholder_image.jpg"
+                    preload="none"
+                    poster="/images/case_main.jpeg"
                   >
                     <source src="/images/Hero_optimized.webm" type="video/webm" />
                     <source src="/images/Hero_optimized.mp4" type="video/mp4" />
@@ -157,7 +157,7 @@ const Hero = () => {
                   </div>
                   <div>
                     <div className="font-semibold text-gray-900">Гарантия</div>
-                    <div className="text-sm text-gray-500">до 20 лет</div>
+                    <div className="text-sm text-gray-500">на все виды работ</div>
                   </div>
                 </div>
               </div>

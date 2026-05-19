@@ -1,138 +1,122 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useModal } from '@/app/context/AppContext';
+import React from 'react';
+import { useModal } from '@/app/context/ModalContext';
 import { Button } from '@/app/components/ui/Button/Button';
+import { useForm, validationRules } from '@/app/hooks/useForm';
 
 interface ContactFormProps {
   onSuccess?: () => void;
   compact?: boolean;
 }
 
+interface ContactFormValues {
+  name: string;
+  phone: string;
+  email: string;
+  message: string;
+  agree: boolean;
+}
+
+/**
+ * Отправка формы через FormSubmit
+ */
+async function submitContactForm(values: ContactFormValues): Promise<void> {
+  const formDataToSend = new FormData();
+  formDataToSend.append('name', values.name);
+  formDataToSend.append('phone', values.phone);
+  formDataToSend.append('email', values.email);
+  formDataToSend.append('message', values.message);
+  formDataToSend.append('agree', values.agree ? 'yes' : 'no');
+  // Hidden fields
+  formDataToSend.append('_subject', 'Новая заявка с лендинга MetalPro');
+  formDataToSend.append('_captcha', 'false');
+  formDataToSend.append('_template', 'table');
+
+  const response = await fetch('https://formsubmit.co/ajax/nezabut123@gmail.com', {
+    method: 'POST',
+    body: formDataToSend,
+  });
+
+  const data = await response.json();
+
+  if (!(data.success === 'true' || data.success === true)) {
+    throw new Error('Ошибка при отправке формы. Пожалуйста, попробуйте ещё раз.');
+  }
+}
+
 const ContactForm: React.FC<ContactFormProps> = ({ onSuccess, compact = false }) => {
   const { closeModal } = useModal();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    message: '',
-    agree: false,
+
+  const {
+    values,
+    errors,
+    isSubmitting,
+    isSuccess,
+    submitError,
+    handleChange,
+    handleSubmit,
+    getCheckboxProps,
+    formProps,
+  } = useForm<ContactFormValues>({
+    fields: {
+      name: {
+        initialValue: '',
+        required: true,
+        rules: [
+          validationRules.required('Введите ваше имя'),
+          validationRules.minLength(2, 'Имя должно содержать минимум 2 символа'),
+        ],
+      },
+      phone: {
+        initialValue: '',
+        required: true,
+        rules: [
+          validationRules.required('Введите ваш телефон'),
+          validationRules.phone('Введите корректный номер телефона'),
+        ],
+      },
+      email: {
+        initialValue: '',
+        rules: [
+          validationRules.email('Введите корректный email адрес'),
+        ],
+      },
+      message: {
+        initialValue: '',
+        required: true,
+        rules: [
+          validationRules.required('Введите ваше сообщение'),
+          validationRules.minLength(10, 'Сообщение должно содержать минимум 10 символов'),
+        ],
+      },
+      agree: {
+        initialValue: false,
+        required: true,
+        rules: [
+          {
+            validator: (value) => value === true,
+            message: 'Необходимо согласие на обработку персональных данных',
+          },
+        ],
+      },
+    },
+    onSubmit: async (values) => {
+      await submitContactForm(values);
+    },
+    onSuccess: (values) => {
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        closeModal();
+        alert('Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.');
+      }
+    },
+    onError: (error) => {
+      console.error('Form submission error:', error);
+    },
+    debounceSubmit: 500,
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const validate = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = 'Введите ваше имя';
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'Имя должно содержать минимум 2 символа';
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Введите ваш телефон';
-    } else if (!/^[\d\s\-\+\(\)]{10,}$/.test(formData.phone.replace(/\D/g, ''))) {
-      newErrors.phone = 'Введите корректный номер телефона';
-    }
-
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Введите корректный email адрес';
-    }
-
-    if (!formData.message.trim()) {
-      newErrors.message = 'Введите ваше сообщение';
-    } else if (formData.message.trim().length < 10) {
-      newErrors.message = 'Сообщение должно содержать минимум 10 символов';
-    }
-
-    if (!formData.agree) {
-      newErrors.agree = 'Необходимо согласие на обработку персональных данных';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    const checked = (e.target as HTMLInputElement).checked;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitError(null);
-
-    if (!validate()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    // Prepare form data for FormSubmit AJAX
-    const formDataToSend = new FormData();
-    formDataToSend.append('name', formData.name);
-    formDataToSend.append('phone', formData.phone);
-    formDataToSend.append('email', formData.email);
-    formDataToSend.append('message', formData.message);
-    formDataToSend.append('agree', formData.agree ? 'yes' : 'no');
-    // Hidden fields
-    formDataToSend.append('_subject', 'Новая заявка с лендинга MetalPro');
-    formDataToSend.append('_captcha', 'false');
-    formDataToSend.append('_template', 'table');
-    // Optional: add _next if you have a thank you page
-    // formDataToSend.append('_next', 'https://yourdomain.com/thanks');
-
-    // Log form data for debugging
-    console.log('ContactForm submitting to FormSubmit:', {
-      name: formData.name,
-      phone: formData.phone,
-      email: formData.email,
-      message: formData.message,
-      agree: formData.agree,
-    });
-
-    // AJAX submission to FormSubmit
-    fetch('https://formsubmit.co/ajax/nezabut123@gmail.com', {
-      method: 'POST',
-      body: formDataToSend,
-    })
-      .then(response => {
-        console.log('FormSubmit response status:', response.status, response.ok);
-        return response.json();
-      })
-      .then(data => {
-        console.log('FormSubmit response data:', data);
-        setIsSubmitting(false);
-        if (data.success === 'true' || data.success === true) {
-          setIsSuccess(true);
-          if (onSuccess) {
-            onSuccess();
-          } else {
-            closeModal();
-            alert('Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.');
-          }
-        } else {
-          console.warn('FormSubmit reported failure:', data);
-          setSubmitError('Ошибка при отправке формы. Пожалуйста, попробуйте ещё раз.');
-        }
-      })
-      .catch(error => {
-        setIsSubmitting(false);
-        console.error('FormSubmit error details:', error);
-        setSubmitError('Произошла ошибка сети. Пожалуйста, проверьте подключение и попробуйте ещё раз.');
-      });
-  };
 
   // Если форма успешно отправлена, показываем сообщение
   if (isSuccess) {
@@ -169,7 +153,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSuccess, compact = false })
       <form 
         action="https://formsubmit.co/nezabut123@gmail.com" 
         method="POST"
-        onSubmit={handleSubmit}
+        {...formProps}
         className="space-y-4"
       >
         {/* Скрытые поля для настройки FormSubmit */}
@@ -186,8 +170,8 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSuccess, compact = false })
             <input
               type="text"
               name="name"
-              value={formData.name}
-              onChange={handleChange}
+              value={values.name}
+              onChange={handleChange('name')}
               className={`w-full px-4 py-3 rounded-lg border ${errors.name ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' : 'border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200'} outline-none transition-colors`}
               placeholder="Ваше имя"
               disabled={isSubmitting}
@@ -203,8 +187,8 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSuccess, compact = false })
             <input
               type="tel"
               name="phone"
-              value={formData.phone}
-              onChange={handleChange}
+              value={values.phone}
+              onChange={handleChange('phone')}
               className={`w-full px-4 py-3 rounded-lg border ${errors.phone ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' : 'border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200'} outline-none transition-colors`}
               placeholder="+7 (___) ___-__-__"
               disabled={isSubmitting}
@@ -222,8 +206,8 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSuccess, compact = false })
           <input
             type="email"
             name="email"
-            value={formData.email}
-            onChange={handleChange}
+            value={values.email}
+            onChange={handleChange('email')}
             className={`w-full px-4 py-3 rounded-lg border ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' : 'border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200'} outline-none transition-colors`}
             placeholder="example@mail.ru"
             disabled={isSubmitting}
@@ -240,8 +224,8 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSuccess, compact = false })
           <textarea
             rows={4}
             name="message"
-            value={formData.message}
-            onChange={handleChange}
+            value={values.message}
+            onChange={handleChange('message')}
             className={`w-full px-4 py-3 rounded-lg border ${errors.message ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' : 'border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200'} outline-none transition-colors resize-none`}
             placeholder="Опишите вашу задачу..."
             disabled={isSubmitting}
@@ -255,9 +239,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSuccess, compact = false })
           <input
             type="checkbox"
             id="agree"
-            name="agree"
-            checked={formData.agree}
-            onChange={handleChange}
+            {...getCheckboxProps('agree')}
             className="w-4 h-4 text-orange-600 rounded focus:ring-orange-500"
             disabled={isSubmitting}
           />

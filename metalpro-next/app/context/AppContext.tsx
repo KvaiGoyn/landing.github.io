@@ -157,7 +157,6 @@ export function useAppContext() {
 // Вспомогательные хуки
 export function useModal() {
   const { state, openModal, closeModal } = useAppContext();
-  console.log('useModal: state.activeModal =', state.activeModal, 'state.modalData =', state.modalData);
   return {
     activeModal: state.activeModal,
     modalData: state.modalData,

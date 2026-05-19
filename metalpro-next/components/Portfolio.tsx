@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useMemo, useEffect } from 'react';
-import { usePortfolioFilter } from '@/app/hooks/usePortfolioFilter';
-import { useAppContext } from '@/app/context/AppContext';
-import { useModal } from '@/app/context/AppContext';
+import Image from 'next/image';
+import { usePortfolioFilter as usePortfolioFilterHook } from '@/app/hooks/usePortfolioFilter';
+import { usePortfolioFilter as usePortfolioFilterContext, PortfolioFilter } from '@/app/context/FilterContext';
+import { useModal } from '@/app/context/ModalContext';
 import { Button } from '@/app/components/ui/Button/Button';
 
 const Portfolio = () => {
@@ -17,7 +18,7 @@ const Portfolio = () => {
         tags: ["Сварка", "Покраска", "Монтаж"],
         category: "Решётки",
         hasRealPhoto: true
-      },     
+      },
       {
         id: 2,
         title: "Антивандальная решетка в частный дом",
@@ -78,7 +79,7 @@ const Portfolio = () => {
     availableCategories,
     resetFilter,
     isCategoryActive,
-  } = usePortfolioFilter({
+  } = usePortfolioFilterHook({
     items: portfolioItems,
     initialCategory: 'all',
     getCategory: (item) => item.category,
@@ -91,16 +92,16 @@ const Portfolio = () => {
     ],
   });
 
-  const { setPortfolioFilter } = useAppContext();
+  const { setFilter } = usePortfolioFilterContext();
   const { openModal } = useModal();
 
   useEffect(() => {
     if (activeCategory === 'all') {
-      setPortfolioFilter('all');
+      setFilter('all');
     } else {
-      setPortfolioFilter(activeCategory as any);
+      setFilter(activeCategory as PortfolioFilter);
     }
-  }, [activeCategory, setPortfolioFilter]);
+  }, [activeCategory, setFilter]);
 
   const handleProjectDetailsClick = () => {
     openModal('project-details', {
@@ -159,7 +160,7 @@ const Portfolio = () => {
           {filteredItems.map((item) => (
             <div key={item.id} className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <div className="aspect-[4/3] relative overflow-hidden">
-                <img src={item.image} alt={item.title} className="absolute inset-0 w-full h-full object-cover" />
+                <Image src={item.image} alt={item.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                 <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
                   {item.tags.map((tag, index) => (
                     <span key={index} className="px-2.5 py-1 bg-white/90 backdrop-blur-sm text-xs font-medium rounded-full text-gray-700">
@@ -221,13 +222,14 @@ const Portfolio = () => {
         <div className="mt-16 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl p-8 lg:p-12 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl"></div>
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 relative z-10">
-            <div className="aspect-video rounded-2xl overflow-hidden">
-              <img
+            <div className="aspect-video rounded-2xl overflow-hidden relative">
+              <Image
                 src="/images/case_main.jpeg"
                 alt="Готовые металлоконструкции"
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
                 loading="lazy"
-                decoding="async"
               />
             </div>
             <div>

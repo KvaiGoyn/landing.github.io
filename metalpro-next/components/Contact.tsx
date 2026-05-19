@@ -82,9 +82,9 @@ const Contact = () => {
           
           <div className="space-y-8">
             <div className="bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl h-64 relative overflow-hidden">
-              <img 
-                src="/images/footer.jpeg" 
-                alt="Карта проезда" 
+              <img
+                src="/images/footer.jpeg"
+                alt="Карта проезда"
                 className="absolute inset-0 w-full h-full object-cover"
               />
             </div>

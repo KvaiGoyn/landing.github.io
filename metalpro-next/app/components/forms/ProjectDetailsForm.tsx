@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useModal } from '@/app/context/AppContext';
+import { useModal } from '@/app/context/ModalContext';
 
 interface ProjectDetailsModalProps {
   projectId?: string;

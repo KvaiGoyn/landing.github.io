@@ -1,155 +1,146 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useModal } from '@/app/context/AppContext';
+import React from 'react';
+import { useModal } from '@/app/context/ModalContext';
+import { Button } from '@/app/components/ui/Button/Button';
+import { useForm, validationRules } from '@/app/hooks/useForm';
 
 interface MeasurementFormProps {
   onSuccess?: () => void;
   compact?: boolean;
 }
 
+interface MeasurementFormValues {
+  address: string;
+  convenientTime: string;
+  date: string;
+  name: string;
+  phone: string;
+  comment: string;
+  agree: boolean;
+}
+
+const timeSlots = [
+  { value: '9:00-12:00', label: '9:00 - 12:00' },
+  { value: '12:00-15:00', label: '12:00 - 15:00' },
+  { value: '15:00-18:00', label: '15:00 - 18:00' },
+  { value: '18:00-21:00', label: '18:00 - 21:00' },
+  { value: 'Любое время', label: 'Любое время' },
+];
+
+/**
+ * Отправка формы вызова замерщика через FormSubmit
+ */
+async function submitMeasurementForm(values: MeasurementFormValues): Promise<void> {
+  const formDataToSend = new FormData();
+  formDataToSend.append('address', values.address);
+  formDataToSend.append('convenientTime', values.convenientTime);
+  formDataToSend.append('date', values.date);
+  formDataToSend.append('name', values.name);
+  formDataToSend.append('phone', values.phone);
+  formDataToSend.append('comment', values.comment);
+  formDataToSend.append('agree', values.agree ? 'yes' : 'no');
+  // Hidden fields
+  formDataToSend.append('_subject', 'Заявка на вызов замерщика с лендинга MetalPro');
+  formDataToSend.append('_captcha', 'false');
+  formDataToSend.append('_template', 'table');
+
+  const response = await fetch('https://formsubmit.co/ajax/nezabut123@gmail.com', {
+    method: 'POST',
+    body: formDataToSend,
+  });
+
+  const data = await response.json();
+
+  if (!(data.success === 'true' || data.success === true)) {
+    throw new Error('Ошибка при отправке формы. Пожалуйста, попробуйте ещё раз.');
+  }
+}
+
 const MeasurementForm: React.FC<MeasurementFormProps> = ({ onSuccess, compact = false }) => {
   const { closeModal } = useModal();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [formData, setFormData] = useState({
-    address: '',
-    convenientTime: '',
-    date: '',
-    name: '',
-    phone: '',
-    comment: '',
-    agree: false,
+
+  const {
+    values,
+    errors,
+    isSubmitting,
+    isSuccess,
+    submitError,
+    handleChange,
+    handleSubmit,
+    getCheckboxProps,
+    formProps,
+  } = useForm<MeasurementFormValues>({
+    fields: {
+      address: {
+        initialValue: '',
+        required: true,
+        rules: [
+          validationRules.required('Введите адрес'),
+          validationRules.minLength(10, 'Адрес должен содержать минимум 10 символов'),
+        ],
+      },
+      convenientTime: {
+        initialValue: '',
+        required: true,
+        rules: [
+          validationRules.required('Выберите удобное время'),
+        ],
+      },
+      date: {
+        initialValue: '',
+        required: false,
+      },
+      name: {
+        initialValue: '',
+        required: true,
+        rules: [
+          validationRules.required('Введите ваше имя'),
+          validationRules.minLength(2, 'Имя должно содержать минимум 2 символа'),
+        ],
+      },
+      phone: {
+        initialValue: '',
+        required: true,
+        rules: [
+          validationRules.required('Введите ваш телефон'),
+          validationRules.phone('Введите корректный номер телефона'),
+        ],
+      },
+      comment: {
+        initialValue: '',
+        required: false,
+        rules: [
+          validationRules.maxLength(500, 'Комментарий не должен превышать 500 символов'),
+        ],
+      },
+      agree: {
+        initialValue: false,
+        required: true,
+        rules: [
+          {
+            validator: (value) => value === true,
+            message: 'Необходимо согласие на обработку персональных данных',
+          },
+        ],
+      },
+    },
+    onSubmit: async (values) => {
+      await submitMeasurementForm(values);
+    },
+    onSuccess: (values) => {
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        closeModal();
+        alert('Заявка на вызов замерщика успешно отправлена! Наш специалист свяжется с вами для уточнения деталей.');
+      }
+    },
+    onError: (error) => {
+      console.error('Form submission error:', error);
+    },
+    debounceSubmit: 500,
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const timeSlots = [
-    { value: '9:00-12:00', label: '9:00 - 12:00' },
-    { value: '12:00-15:00', label: '12:00 - 15:00' },
-    { value: '15:00-18:00', label: '15:00 - 18:00' },
-    { value: '18:00-21:00', label: '18:00 - 21:00' },
-    { value: 'Любое время', label: 'Любое время' },
-  ];
-
-  const validate = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.address.trim()) {
-      newErrors.address = 'Введите адрес';
-    } else if (formData.address.trim().length < 10) {
-      newErrors.address = 'Адрес должен содержать минимум 10 символов';
-    }
-
-    if (!formData.convenientTime.trim()) {
-      newErrors.convenientTime = 'Выберите удобное время';
-    }
-
-    if (!formData.name.trim()) {
-      newErrors.name = 'Введите ваше имя';
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'Имя должно содержать минимум 2 символа';
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Введите ваш телефон';
-    } else if (!/^[\d\s\-\+\(\)]{10,}$/.test(formData.phone.replace(/\D/g, ''))) {
-      newErrors.phone = 'Введите корректный номер телефона';
-    }
-
-    if (formData.comment && formData.comment.length > 500) {
-      newErrors.comment = 'Комментарий не должен превышать 500 символов';
-    }
-
-    if (!formData.agree) {
-      newErrors.agree = 'Необходимо согласие на обработку персональных данных';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    const checked = (e.target as HTMLInputElement).checked;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitError(null);
-
-    if (!validate()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    // Prepare form data for FormSubmit AJAX
-    const formDataToSend = new FormData();
-    formDataToSend.append('address', formData.address);
-    formDataToSend.append('convenientTime', formData.convenientTime);
-    formDataToSend.append('date', formData.date);
-    formDataToSend.append('name', formData.name);
-    formDataToSend.append('phone', formData.phone);
-    formDataToSend.append('comment', formData.comment);
-    formDataToSend.append('agree', formData.agree ? 'yes' : 'no');
-    // Hidden fields
-    formDataToSend.append('_subject', 'Заявка на вызов замерщика с лендинга MetalPro');
-    formDataToSend.append('_captcha', 'false');
-    formDataToSend.append('_template', 'table');
-    // Optional: add _next if you have a thank you page
-    // formDataToSend.append('_next', 'https://yourdomain.com/thanks');
-
-    // Log form data for debugging
-    console.log('MeasurementForm submitting to FormSubmit:', {
-      address: formData.address,
-      convenientTime: formData.convenientTime,
-      date: formData.date,
-      name: formData.name,
-      phone: formData.phone,
-      comment: formData.comment,
-      agree: formData.agree,
-    });
-
-    // AJAX submission to FormSubmit
-    fetch('https://formsubmit.co/ajax/nezabut123@gmail.com', {
-      method: 'POST',
-      body: formDataToSend,
-    })
-      .then(response => {
-        console.log('FormSubmit response status:', response.status, response.ok);
-        return response.json();
-      })
-      .then(data => {
-        console.log('FormSubmit response data:', data);
-        setIsSubmitting(false);
-        if (data.success === 'true' || data.success === true) {
-          setIsSuccess(true);
-          if (onSuccess) {
-            onSuccess();
-          } else {
-            closeModal();
-            alert('Заявка на вызов замерщика успешно отправлена! Наш специалист свяжется с вами для уточнения деталей.');
-          }
-        } else {
-          console.warn('FormSubmit reported failure:', data);
-          setSubmitError('Ошибка при отправке формы. Пожалуйста, попробуйте ещё раз.');
-        }
-      })
-      .catch(error => {
-        setIsSubmitting(false);
-        console.error('FormSubmit error details:', error);
-        setSubmitError('Произошла ошибка сети. Пожалуйста, проверьте подключение и попробуйте ещё раз.');
-      });
-  };
 
   if (isSuccess) {
     return (
@@ -164,12 +155,14 @@ const MeasurementForm: React.FC<MeasurementFormProps> = ({ onSuccess, compact = 
         <p className="text-gray-600 mb-6">
           Наш замерщик свяжется с вами для согласования времени и адреса выезда.
         </p>
-        <button
+        <Button
           onClick={closeModal}
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-orange-500 text-white font-medium hover:bg-orange-600 transition-colors"
+          variant="primary"
+          size="md"
+          rounded="lg"
         >
           Закрыть
-        </button>
+        </Button>
       </div>
     );
   }
@@ -183,7 +176,7 @@ const MeasurementForm: React.FC<MeasurementFormProps> = ({ onSuccess, compact = 
       <form 
         action="https://formsubmit.co/nezabut123@gmail.com" 
         method="POST"
-        onSubmit={handleSubmit}
+        {...formProps}
         className="space-y-4"
       >
         {/* Скрытые поля для настройки FormSubmit */}
@@ -199,8 +192,8 @@ const MeasurementForm: React.FC<MeasurementFormProps> = ({ onSuccess, compact = 
           <textarea
             rows={3}
             name="address"
-            value={formData.address}
-            onChange={handleChange}
+            value={values.address}
+            onChange={handleChange('address')}
             className={`w-full px-4 py-3 rounded-lg border ${errors.address ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' : 'border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200'} outline-none transition-colors resize-none`}
             placeholder="Полный адрес с указанием города, улицы, дома и квартиры"
             disabled={isSubmitting}
@@ -209,7 +202,7 @@ const MeasurementForm: React.FC<MeasurementFormProps> = ({ onSuccess, compact = 
             <p className="mt-1 text-sm text-red-600">{errors.address}</p>
           )}
         </div>
-
+        
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -217,8 +210,8 @@ const MeasurementForm: React.FC<MeasurementFormProps> = ({ onSuccess, compact = 
             </label>
             <select
               name="convenientTime"
-              value={formData.convenientTime}
-              onChange={handleChange}
+              value={values.convenientTime}
+              onChange={handleChange('convenientTime')}
               className={`w-full px-4 py-3 rounded-lg border ${errors.convenientTime ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' : 'border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200'} outline-none transition-colors`}
               disabled={isSubmitting}
             >
@@ -240,14 +233,14 @@ const MeasurementForm: React.FC<MeasurementFormProps> = ({ onSuccess, compact = 
             <input
               type="date"
               name="date"
-              value={formData.date}
-              onChange={handleChange}
+              value={values.date}
+              onChange={handleChange('date')}
               className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-colors"
               disabled={isSubmitting}
             />
           </div>
         </div>
-
+        
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -256,8 +249,8 @@ const MeasurementForm: React.FC<MeasurementFormProps> = ({ onSuccess, compact = 
             <input
               type="text"
               name="name"
-              value={formData.name}
-              onChange={handleChange}
+              value={values.name}
+              onChange={handleChange('name')}
               className={`w-full px-4 py-3 rounded-lg border ${errors.name ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' : 'border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200'} outline-none transition-colors`}
               placeholder="Ваше имя"
               disabled={isSubmitting}
@@ -273,8 +266,8 @@ const MeasurementForm: React.FC<MeasurementFormProps> = ({ onSuccess, compact = 
             <input
               type="tel"
               name="phone"
-              value={formData.phone}
-              onChange={handleChange}
+              value={values.phone}
+              onChange={handleChange('phone')}
               className={`w-full px-4 py-3 rounded-lg border ${errors.phone ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' : 'border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200'} outline-none transition-colors`}
               placeholder="+7 (___) ___-__-__"
               disabled={isSubmitting}
@@ -284,7 +277,7 @@ const MeasurementForm: React.FC<MeasurementFormProps> = ({ onSuccess, compact = 
             )}
           </div>
         </div>
-
+        
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Комментарий (необязательно)
@@ -292,8 +285,8 @@ const MeasurementForm: React.FC<MeasurementFormProps> = ({ onSuccess, compact = 
           <textarea
             rows={3}
             name="comment"
-            value={formData.comment}
-            onChange={handleChange}
+            value={values.comment}
+            onChange={handleChange('comment')}
             className={`w-full px-4 py-3 rounded-lg border ${errors.comment ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' : 'border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200'} outline-none transition-colors resize-none`}
             placeholder="Дополнительная информация: что нужно замерить, особенности доступа и т.д."
             disabled={isSubmitting}
@@ -302,14 +295,12 @@ const MeasurementForm: React.FC<MeasurementFormProps> = ({ onSuccess, compact = 
             <p className="mt-1 text-sm text-red-600">{errors.comment}</p>
           )}
         </div>
-
+        
         <div className="flex items-center gap-3">
           <input
             type="checkbox"
             id="agree-measurement"
-            name="agree"
-            checked={formData.agree}
-            onChange={handleChange}
+            {...getCheckboxProps('agree')}
             className="w-4 h-4 text-orange-600 rounded focus:ring-orange-500"
             disabled={isSubmitting}
           />
@@ -327,29 +318,22 @@ const MeasurementForm: React.FC<MeasurementFormProps> = ({ onSuccess, compact = 
           </div>
         )}
         
-        <button
+        <Button
           type="submit"
-          disabled={isSubmitting}
-          className="w-full inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-primary/90 h-12 rounded-lg px-6 has-[>svg]:px-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-xl shadow-orange-500/25"
+          variant="primary"
+          size="lg"
+          fullWidth
+          rounded="lg"
+          state={isSubmitting ? 'loading' : 'default'}
+          rightIcon={
+            <svg className="w-5 h-5 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+          }
         >
-          {isSubmitting ? (
-            <>
-              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Отправка...
-            </>
-          ) : (
-            <>
-              Вызвать замерщика
-              <svg className="w-5 h-5 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </svg>
-            </>
-          )}
-        </button>
+          {isSubmitting ? 'Отправка...' : 'Вызвать замерщика'}
+        </Button>
         
         <p className="text-xs text-gray-500 text-center">
           Замер бесплатный. Выезд в пределах города в течение 24 часов.

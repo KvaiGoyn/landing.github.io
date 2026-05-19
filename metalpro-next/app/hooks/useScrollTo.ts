@@ -75,7 +75,6 @@ export function useNavigationScroll() {
     e: React.MouseEvent<HTMLAnchorElement>,
     sectionId: string
   ) => {
-    console.log('handleNavClick called with sectionId:', sectionId);
     e.preventDefault();
     scrollToSection(sectionId);
   }, [scrollToSection]);

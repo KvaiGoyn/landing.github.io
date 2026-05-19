@@ -1,15 +1,24 @@
 'use client';
 
-import React from 'react';
-import { useModal } from '@/app/context/AppContext';
+import React, { Suspense, lazy } from 'react';
+import { useModal } from '@/app/context/ModalContext';
 import { Modal } from '@/app/components/ui/Modal/Modal';
-import CallbackForm from '@/app/components/forms/CallbackForm';
-import ConsultationForm from '@/app/components/forms/ConsultationForm';
-import CalculationForm from '@/app/components/forms/CalculationForm';
-import MeasurementForm from '@/app/components/forms/MeasurementForm';
-import ContactForm from '@/app/components/forms/ContactForm';
-import OrderForm from '@/app/components/forms/OrderForm';
-import ProjectDetailsModal from '@/app/components/forms/ProjectDetailsForm';
+
+// Динамические импорты для форм (загружаются только при открытии модального окна)
+const CallbackForm = lazy(() => import('@/app/components/forms/CallbackForm'));
+const ConsultationForm = lazy(() => import('@/app/components/forms/ConsultationForm'));
+const CalculationForm = lazy(() => import('@/app/components/forms/CalculationForm'));
+const MeasurementForm = lazy(() => import('@/app/components/forms/MeasurementForm'));
+const ContactForm = lazy(() => import('@/app/components/forms/ContactForm'));
+const OrderForm = lazy(() => import('@/app/components/forms/OrderForm'));
+const ProjectDetailsModal = lazy(() => import('@/app/components/forms/ProjectDetailsForm'));
+
+// Компонент-загрузчик для динамических импортов
+const FormLoader = () => (
+  <div className="flex items-center justify-center min-h-[200px]">
+    <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+  </div>
+);
 
 /**
  * Компонент для управления всеми модальными окнами с формами
@@ -89,15 +98,17 @@ const ModalManager: React.FC = () => {
 
   if (activeModal === 'project-details') {
     return (
-      <ProjectDetailsModal
-        projectId={modalData?.projectId}
-        projectName={modalData?.projectName}
-        projectDescription={modalData?.projectDescription}
-        projectImages={modalData?.projectImages}
-        projectFeatures={modalData?.projectFeatures}
-        projectPrice={modalData?.projectPrice}
-        projectTimeline={modalData?.projectTimeline}
-      />
+      <Suspense fallback={<FormLoader />}>
+        <ProjectDetailsModal
+          projectId={modalData?.projectId}
+          projectName={modalData?.projectName}
+          projectDescription={modalData?.projectDescription}
+          projectImages={modalData?.projectImages}
+          projectFeatures={modalData?.projectFeatures}
+          projectPrice={modalData?.projectPrice}
+          projectTimeline={modalData?.projectTimeline}
+        />
+      </Suspense>
     );
   }
 
@@ -114,7 +125,9 @@ const ModalManager: React.FC = () => {
       showCloseButton={true}
     >
       <div className="max-h-[80vh] overflow-y-auto p-6">
-        {renderModalContent()}
+        <Suspense fallback={<FormLoader />}>
+          {renderModalContent()}
+        </Suspense>
       </div>
     </Modal>
   );

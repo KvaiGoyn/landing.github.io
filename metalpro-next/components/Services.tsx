@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useScrollTo } from '@/app/hooks/useScrollTo';
-import { useModal } from '@/app/context/AppContext';
+import { useModal } from '@/app/context/ModalContext';
 import { SECTION_IDS } from '@/app/constants/sections';
 import { Button } from '@/app/components/ui/Button/Button';
 

@@ -1,140 +1,120 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useModal } from '@/app/context/AppContext';
+import React from 'react';
+import { useModal } from '@/app/context/ModalContext';
+import { useForm } from '@/app/hooks/useForm';
+import { validationRules } from '@/app/utils/validation';
 
 interface CalculationFormProps {
   onSuccess?: () => void;
   compact?: boolean;
 }
 
+interface CalculationFormValues {
+  serviceType: string;
+  material: string;
+  color: string;
+  quantity: number;
+  name: string;
+  phone: string;
+  email: string;
+  agree: boolean;
+}
+
+async function submitCalculationForm(values: CalculationFormValues): Promise<void> {
+  const formDataToSend = new FormData();
+  formDataToSend.append('name', values.name);
+  formDataToSend.append('phone', values.phone);
+  formDataToSend.append('email', values.email);
+  formDataToSend.append('serviceType', values.serviceType);
+  formDataToSend.append('material', values.material);
+  formDataToSend.append('color', values.color);
+  formDataToSend.append('quantity', values.quantity.toString());
+  formDataToSend.append('agree', values.agree ? 'yes' : 'no');
+  // Hidden fields
+  formDataToSend.append('_subject', 'Заявка на расчет стоимости с лендинга MetalPro');
+  formDataToSend.append('_captcha', 'false');
+  formDataToSend.append('_template', 'table');
+  // Optional: add _next if you have a thank you page
+  // formDataToSend.append('_next', 'https://yourdomain.com/thanks');
+
+  const response = await fetch('https://formsubmit.co/ajax/nezabut123@gmail.com', {
+    method: 'POST',
+    body: formDataToSend,
+  });
+  const data = await response.json();
+  if (!(data.success === 'true' || data.success === true)) {
+    throw new Error('Ошибка при отправке формы. Пожалуйста, попробуйте ещё раз.');
+  }
+}
+
 const CalculationForm: React.FC<CalculationFormProps> = ({ onSuccess, compact = false }) => {
   const { closeModal } = useModal();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [formData, setFormData] = useState({
-    serviceType: 'Другое',
-    material: '',
-    color: '',
-    quantity: 1,
-    name: '',
-    phone: '',
-    email: '',
-    agree: false,
+
+  const { values, errors, isSubmitting, isSuccess, submitError, handleChange, handleSubmit, getCheckboxProps, formProps } = useForm<CalculationFormValues>({
+    fields: {
+      serviceType: {
+        initialValue: 'Другое',
+        required: false,
+      },
+      material: {
+        initialValue: '',
+        required: false,
+      },
+      color: {
+        initialValue: '',
+        required: false,
+      },
+      quantity: {
+        initialValue: 1,
+        required: false,
+        rules: [
+          validationRules.numeric('Количество должно быть числом'),
+        ],
+      },
+      name: {
+        initialValue: '',
+        required: true,
+        rules: [
+          validationRules.required('Введите ваше имя'),
+          validationRules.minLength(2, 'Имя должно содержать минимум 2 символа'),
+        ],
+      },
+      phone: {
+        initialValue: '',
+        required: true,
+        rules: [
+          validationRules.required('Введите ваш телефон'),
+          validationRules.phone('Введите корректный номер телефона'),
+        ],
+      },
+      email: {
+        initialValue: '',
+        required: false,
+        rules: [
+          validationRules.email('Введите корректный email адрес'),
+        ],
+      },
+      agree: {
+        initialValue: false,
+        required: true,
+        rules: [
+          validationRules.required('Необходимо согласие на обработку персональных данных'),
+        ],
+      },
+    },
+    onSubmit: async (values) => await submitCalculationForm(values),
+    onSuccess: (values) => {
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        closeModal();
+        alert('Заявка на расчет стоимости успешно отправлена! Мы рассчитаем стоимость и свяжемся с вами в течение 24 часов.');
+      }
+    },
+    onError: (error) => console.error('Form submission error:', error),
+    debounceSubmit: 500,
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const validate = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = 'Введите ваше имя';
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'Имя должно содержать минимум 2 символа';
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Введите ваш телефон';
-    } else if (!/^[\d\s\-\+\(\)]{10,}$/.test(formData.phone.replace(/\D/g, ''))) {
-      newErrors.phone = 'Введите корректный номер телефона';
-    }
-
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Введите корректный email адрес';
-    }
-
-    if (!formData.agree) {
-      newErrors.agree = 'Необходимо согласие на обработку персональных данных';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    const checked = (e.target as HTMLInputElement).checked;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : (type === 'number' ? parseInt(value) || 0 : value),
-    }));
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitError(null);
-
-    if (!validate()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    // Prepare form data for FormSubmit AJAX
-    const formDataToSend = new FormData();
-    formDataToSend.append('name', formData.name);
-    formDataToSend.append('phone', formData.phone);
-    formDataToSend.append('email', formData.email);
-    formDataToSend.append('serviceType', formData.serviceType);
-    formDataToSend.append('material', formData.material);
-    formDataToSend.append('color', formData.color);
-    formDataToSend.append('quantity', formData.quantity.toString());
-    formDataToSend.append('agree', formData.agree ? 'yes' : 'no');
-    // Hidden fields
-    formDataToSend.append('_subject', 'Заявка на расчет стоимости с лендинга MetalPro');
-    formDataToSend.append('_captcha', 'false');
-    formDataToSend.append('_template', 'table');
-    // Optional: add _next if you have a thank you page
-    // formDataToSend.append('_next', 'https://yourdomain.com/thanks');
-
-    // Log form data for debugging
-    console.log('CalculationForm submitting to FormSubmit:', {
-      name: formData.name,
-      phone: formData.phone,
-      email: formData.email,
-      serviceType: formData.serviceType,
-      material: formData.material,
-      color: formData.color,
-      quantity: formData.quantity,
-      agree: formData.agree,
-    });
-
-    // AJAX submission to FormSubmit
-    fetch('https://formsubmit.co/ajax/nezabut123@gmail.com', {
-      method: 'POST',
-      body: formDataToSend,
-    })
-      .then(response => {
-        console.log('FormSubmit response status:', response.status, response.ok);
-        return response.json();
-      })
-      .then(data => {
-        console.log('FormSubmit response data:', data);
-        setIsSubmitting(false);
-        if (data.success === 'true' || data.success === true) {
-          setIsSuccess(true);
-          if (onSuccess) {
-            onSuccess();
-          } else {
-            closeModal();
-            alert('Заявка на расчет стоимости успешно отправлена! Мы рассчитаем стоимость и свяжемся с вами в течение 24 часов.');
-          }
-        } else {
-          console.warn('FormSubmit reported failure:', data);
-          setSubmitError('Ошибка при отправке формы. Пожалуйста, попробуйте ещё раз.');
-        }
-      })
-      .catch(error => {
-        setIsSubmitting(false);
-        console.error('FormSubmit error details:', error);
-        setSubmitError('Произошла ошибка сети. Пожалуйста, проверьте подключение и попробуйте ещё раз.');
-      });
-  };
 
   if (isSuccess) {
     return (
@@ -166,9 +146,7 @@ const CalculationForm: React.FC<CalculationFormProps> = ({ onSuccess, compact = 
       )}
       
       <form 
-        action="https://formsubmit.co/nezabut123@gmail.com" 
-        method="POST"
-        onSubmit={handleSubmit}
+        {...formProps}
         className="space-y-4"
       >
         {/* Скрытые поля для настройки FormSubmit */}
@@ -184,8 +162,8 @@ const CalculationForm: React.FC<CalculationFormProps> = ({ onSuccess, compact = 
           <input
             type="text"
             name="name"
-            value={formData.name}
-            onChange={handleChange}
+            value={values.name}
+            onChange={handleChange('name')}
             className={`w-full px-4 py-3 rounded-lg border ${errors.name ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' : 'border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200'} outline-none transition-colors`}
             placeholder="Ваше имя"
             disabled={isSubmitting}
@@ -200,8 +178,8 @@ const CalculationForm: React.FC<CalculationFormProps> = ({ onSuccess, compact = 
           <input
             type="tel"
             name="phone"
-            value={formData.phone}
-            onChange={handleChange}
+            value={values.phone}
+            onChange={handleChange('phone')}
             className={`w-full px-4 py-3 rounded-lg border ${errors.phone ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' : 'border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200'} outline-none transition-colors`}
             placeholder="+7 (___) ___-__-__"
             disabled={isSubmitting}
@@ -216,8 +194,8 @@ const CalculationForm: React.FC<CalculationFormProps> = ({ onSuccess, compact = 
           <input
             type="email"
             name="email"
-            value={formData.email}
-            onChange={handleChange}
+            value={values.email}
+            onChange={handleChange('email')}
             className={`w-full px-4 py-3 rounded-lg border ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' : 'border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200'} outline-none transition-colors`}
             placeholder="email@example.com"
             disabled={isSubmitting}
@@ -229,9 +207,7 @@ const CalculationForm: React.FC<CalculationFormProps> = ({ onSuccess, compact = 
           <input
             type="checkbox"
             id="agree-calculation"
-            name="agree"
-            checked={formData.agree}
-            onChange={handleChange}
+            {...getCheckboxProps('agree')}
             className="w-4 h-4 text-orange-600 rounded focus:ring-orange-500"
             disabled={isSubmitting}
           />

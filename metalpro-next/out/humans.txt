@@ -1,0 +1,30 @@
+/* TEAM */
+Разработчик: Команда МеталлПро
+Сайт: https://metalpro.ru
+Email: info@metalpro.ru
+Город: Москва, Россия
+
+/* ТЕХНОЛОГИИ */
+Frontend: Next.js 14, React, TypeScript, Tailwind CSS
+Backend: Node.js, API Routes
+Хостинг: Vercel
+Сборка: Turbopack
+Оптимизация: Image Optimization, Lazy Loading
+
+/* ДОСТУПНОСТЬ */
+Стандарты: WCAG 2.1 AA, Semantic HTML, ARIA
+Язык: Русский
+Кодировка: UTF-8
+
+/* ПРАВА */
+Авторские права: © 2025 МеталлПро. Все права защищены.
+Лицензия: Проприетарное программное обеспечение
+
+/* БЛАГОДАРНОСТИ */
+Иконки: SVG Icons
+Шрифты: Google Fonts (Inter)
+Анимации: CSS Animations
+
+/* ОБНОВЛЕНО */
+Последнее обновление: 2025-12-18
+Версия: 2.0.0
