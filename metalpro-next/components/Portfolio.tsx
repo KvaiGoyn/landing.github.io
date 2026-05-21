@@ -33,15 +33,15 @@ const Portfolio = () => {
         description: "Пескоструйная очистка, порошковая покраска рамы в зеленый RAL6038.",
         image: "/images/motocycle.jpeg",
         tags: ["Покраска"],
-        category: "Другое"
+        category: "Покраска"
       },
       {
         id: 4,
-        title: "Каркас второго этажа",
-        description: "Металлокаркас для производственного помещения: сварка, усиленные балки, порошковая покраска.",
+        title: "Транспортная система для печи",  // ← новое название
+        description: "Рольганговая транспортная система для подачи заготовок в промышленную печь. Полный цикл: проектирование, сварка, порошковая покраска, монтаж и пусконаладка.",
         image: "/images/metal.jpg",
-        tags: ["Сварка", "Покраска"],
-        category: "Другое"
+        tags: ["Сварка", "Покраска", "Монтаж"],  // ← добавлен монтаж
+        category: "Металлоконструкции"
       },
       {
         id: 5,
@@ -49,15 +49,15 @@ const Portfolio = () => {
         description: "Декоративное подстолье по чертежам заказчика.",
         image: "/images/table.jpeg",
         tags: ["Сварка", "Покраска"],
-        category: "Другое",
+        category: "Металлоконструкции",
       },
       {
         id: 6,
         title: "Покраска дисков",
-        description: "Отчистка накладок на диски машины с последущей порошковой покраской",
+        description: "Отчистка накладок на диски машины с последующей порошковой покраской",
         image: "/images/disk.jpeg",
-        tags: ["Сварка", "Покраска"],
-        category: "Перила и лестницы",
+        tags: ["Покраска"],  // ← убрал сварку (диски только красят)
+        category: "Покраска",
       },
     ],
     []
@@ -65,11 +65,11 @@ const Portfolio = () => {
 
   // Все фото для модалки (карусель)
   const modalImages = [
-    '/images/case_main.jpeg',        // итоговый результат
-    '/images/case_build.jpeg',       // процесс изготовления
-    '/images/case_dev.jpeg',         // разработка / сварка
-    '/images/case_paint_before.jpg', // до покраски
-    '/images/case_paint_after.jpg',  // после покраски
+    '/images/case_main.jpeg',
+    '/images/case_build.jpeg',
+    '/images/case_dev.jpeg',
+    '/images/case_paint_before.jpg',
+    '/images/case_paint_after.jpg',
   ];
 
   const {
@@ -86,9 +86,8 @@ const Portfolio = () => {
     categories: [
       { id: 'all', label: 'Все работы' },
       { id: 'Решётки', label: 'Решётки' },
-      { id: 'Перила и лестницы', label: 'Перила и лестницы' },
-      { id: 'Козырьки и навесы', label: 'Козырьки и навесы' },
-      { id: 'Ворота и заборы', label: 'Ворота и заборы' },
+      { id: 'Покраска', label: 'Покраска' },
+      { id: 'Металлоконструкции', label: 'Металлоконструкции' },
     ],
   });
 
@@ -124,7 +123,6 @@ const Portfolio = () => {
   return (
     <section id="portfolio" className="py-20 lg:py-28 bg-gray-50 relative overflow-hidden">
       <div className="container mx-auto px-4 lg:px-8">
-        {/* Заголовок и фильтры (без изменений) */}
         <div className="text-center max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-full px-4 py-2 mb-6">
             <span className="text-sm font-medium text-orange-700">Портфолио</span>
@@ -155,7 +153,6 @@ const Portfolio = () => {
           ))}
         </div>
 
-        {/* Сетка проектов */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredItems.map((item) => (
             <div key={item.id} className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
@@ -181,7 +178,7 @@ const Portfolio = () => {
                       {item.id === 1 ? "Отсутствие защиты" :
                        item.id === 2 ? "Пустой проем" :
                        item.id === 3 ? "Ржавчина на раме" :
-                       item.id === 4 ? "Неиспользуемое пространство под потолком" :
+                       item.id === 4 ? "Ручная подача заготовок" :  // ← изменено
                        item.id === 5 ? "Эскиз и замеры" : "Обычные диски"}
                     </div>
                   </div>
@@ -191,7 +188,7 @@ const Portfolio = () => {
                       {item.id === 1 ? "Изготовление решетки" :
                        item.id === 2 ? "Изготовление и монтаж" :
                        item.id === 3 ? "Очистка и покраска" :
-                       item.id === 4 ? "Монтаж перекрытий" :
+                       item.id === 4 ? "Проектирование, сварка, покраска, монтаж" :  // ← изменено
                        item.id === 5 ? "Изготовление и покраска" : "Очистка и покраска"}
                     </div>
                   </div>
@@ -201,7 +198,7 @@ const Portfolio = () => {
                       {item.id === 1 ? "Монтаж в офис Мегафон" :
                        item.id === 2 ? "Готовый элемент здания" :
                        item.id === 3 ? "Красивая рама" :
-                       item.id === 4 ? "Готовый каркас для второго этажа" :
+                       item.id === 4 ? "Автоматизированная подача в печь" :  // ← изменено
                        item.id === 5 ? "Готовое подстолье" : "Красивые диски"}
                     </div>
                   </div>
@@ -218,7 +215,7 @@ const Portfolio = () => {
           ))}
         </div>
 
-        {/* Кейс-стади с одним итоговым фото */}
+        {/* Кейс-стади (без изменений) */}
         <div className="mt-16 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl p-8 lg:p-12 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl"></div>
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 relative z-10">

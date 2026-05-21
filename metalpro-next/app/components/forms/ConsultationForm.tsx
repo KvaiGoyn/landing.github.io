@@ -40,7 +40,7 @@ async function submitConsultationForm(values: ConsultationFormValues): Promise<v
   formDataToSend.append('details', values.details);
   formDataToSend.append('agree', values.agree ? 'yes' : 'no');
   // Hidden fields
-  formDataToSend.append('_subject', 'Заявка на консультацию с лендинга MetalPro');
+  formDataToSend.append('_subject', 'Заявка на консультацию с лендинга Стиль Мастер');
   formDataToSend.append('_captcha', 'false');
   formDataToSend.append('_template', 'table');
 
@@ -171,7 +171,7 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
         className="space-y-4"
       >
         {/* Скрытые поля для настройки FormSubmit */}
-        <input type="hidden" name="_subject" value="Заявка на консультацию с лендинга MetalPro" />
+        <input type="hidden" name="_subject" value="Заявка на консультацию с лендинга Стиль Мастер" />
         <input type="hidden" name="_captcha" value="false" />
         <input type="hidden" name="_template" value="table" />
         <input type="hidden" name="_next" value="https://yourdomain.com/thanks" />

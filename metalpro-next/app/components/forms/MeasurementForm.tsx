@@ -41,7 +41,7 @@ async function submitMeasurementForm(values: MeasurementFormValues): Promise<voi
   formDataToSend.append('comment', values.comment);
   formDataToSend.append('agree', values.agree ? 'yes' : 'no');
   // Hidden fields
-  formDataToSend.append('_subject', 'Заявка на вызов замерщика с лендинга MetalPro');
+  formDataToSend.append('_subject', 'Заявка на вызов замерщика с лендинга Стиль Мастер');
   formDataToSend.append('_captcha', 'false');
   formDataToSend.append('_template', 'table');
 
@@ -180,7 +180,7 @@ const MeasurementForm: React.FC<MeasurementFormProps> = ({ onSuccess, compact = 
         className="space-y-4"
       >
         {/* Скрытые поля для настройки FormSubmit */}
-        <input type="hidden" name="_subject" value="Заявка на вызов замерщика с лендинга MetalPro" />
+        <input type="hidden" name="_subject" value="Заявка на вызов замерщика с лендинга Стиль Мастер" />
         <input type="hidden" name="_captcha" value="false" />
         <input type="hidden" name="_template" value="table" />
         <input type="hidden" name="_next" value="https://yourdomain.com/thanks" />

@@ -29,7 +29,7 @@ async function submitContactForm(values: ContactFormValues): Promise<void> {
   formDataToSend.append('message', values.message);
   formDataToSend.append('agree', values.agree ? 'yes' : 'no');
   // Hidden fields
-  formDataToSend.append('_subject', 'Новая заявка с лендинга MetalPro');
+  formDataToSend.append('_subject', 'Новая заявка с лендинга Стиль Мастер');
   formDataToSend.append('_captcha', 'false');
   formDataToSend.append('_template', 'table');
 
@@ -157,7 +157,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSuccess, compact = false })
         className="space-y-4"
       >
         {/* Скрытые поля для настройки FormSubmit */}
-        <input type="hidden" name="_subject" value="Новая заявка с лендинга MetalPro" />
+        <input type="hidden" name="_subject" value="Новая заявка с лендинга Стиль Мастер" />
         <input type="hidden" name="_captcha" value="false" />
         <input type="hidden" name="_template" value="table" />
         <input type="hidden" name="_next" value="https://yourdomain.com/thanks" /> {/* Замените на ваш URL */}
@@ -274,7 +274,15 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSuccess, compact = false })
         </Button>
         
         <p className="text-xs text-gray-500 text-center">
-          Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности
+          Нажимая кнопку, вы соглашаетесь с{' '}
+          <a
+            href="/legal/privacy-policy"
+            className="text-orange-500 hover:text-orange-600 underline transition-colors"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            политикой конфиденциальности
+          </a>
         </p>
       </form>
     </div>

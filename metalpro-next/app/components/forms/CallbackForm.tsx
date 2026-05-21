@@ -29,7 +29,7 @@ async function submitCallbackForm(values: CallbackFormValues): Promise<void> {
   formDataToSend.append('comment', values.comment);
   formDataToSend.append('agree', values.agree ? 'yes' : 'no');
   // Hidden fields
-  formDataToSend.append('_subject', 'Заявка на обратный звонок с лендинга MetalPro');
+  formDataToSend.append('_subject', 'Заявка на обратный звонок с лендинга Стиль Мастер');
   formDataToSend.append('_captcha', 'false');
   formDataToSend.append('_template', 'table');
 
@@ -153,7 +153,7 @@ const CallbackForm: React.FC<CallbackFormProps> = ({ onSuccess, compact = false 
         className="space-y-4"
       >
         {/* Скрытые поля для настройки FormSubmit */}
-        <input type="hidden" name="_subject" value="Заявка на обратный звонок с лендинга MetalPro" />
+        <input type="hidden" name="_subject" value="Заявка на обратный звонок с лендинга Стиль Мастер" />
         <input type="hidden" name="_captcha" value="false" />
         <input type="hidden" name="_template" value="table" />
         <input type="hidden" name="_next" value="https://yourdomain.com/thanks" />

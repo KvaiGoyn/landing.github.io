@@ -98,7 +98,7 @@ const Partners = () => {
           </div>
         </div>
         
-        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="flex flex-wrap justify-center gap-6 mt-12">
           <div className="text-center">
             <div className="text-2xl md:text-3xl font-bold text-gray-900">25+</div>
             <div className="text-sm text-gray-500">корпоративных клиентов</div>
@@ -111,7 +111,6 @@ const Partners = () => {
             <div className="text-2xl md:text-3xl font-bold text-gray-900">9</div>
             <div className="text-sm text-gray-500">лет на рынке</div>
           </div>
-          
         </div>
       </div>
     </section>

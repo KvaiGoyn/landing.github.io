@@ -1,10 +1,61 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import ContactForm from '@/app/components/forms/ContactForm';
 import { Accordion, AccordionItem } from '@/app/components/ui/Accordion';
 
 const Contact = () => {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<any>(null);
+
+  // Координаты центра карты (адрес: Свердловская область, п. Садовый, ул. Глинная 9)
+  // Можно уточнить через геокодер, но для демонстрации используем приблизительные координаты.
+  const centerCoordinates = [56.953732, 60.672071]; // Широта, долгота (пример для района Екатеринбурга)
+
+  useEffect(() => {
+    // Проверяем, загружен ли уже API Яндекс.Карт
+    if (typeof window !== 'undefined' && !window.ymaps) {
+      const script = document.createElement('script');
+      script.src = `https://api-maps.yandex.ru/2.1/?apikey=${process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY}&lang=ru_RU`;
+      script.async = true;
+      script.onload = () => {
+        window.ymaps.ready(initMap);
+      };
+      document.head.appendChild(script);
+    } else if (window.ymaps) {
+      window.ymaps.ready(initMap);
+    }
+
+    return () => {
+      // Очистка карты при размонтировании
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.destroy();
+      }
+    };
+  }, []);
+
+  const initMap = () => {
+    if (!mapRef.current) return;
+
+    // Создаём карту
+    const map = new window.ymaps.Map(mapRef.current, {
+      center: centerCoordinates,
+      zoom: 16,
+      controls: ['zoomControl', 'fullscreenControl'],
+    });
+
+    // Добавляем метку
+    const placemark = new window.ymaps.Placemark(centerCoordinates, {
+      hintContent: 'Наше производство',
+      balloonContent: 'Свердловская область, п. Садовый, ул. Глинная 9',
+    }, {
+      preset: 'islands#redIcon',
+    });
+
+    map.geoObjects.add(placemark);
+    mapInstanceRef.current = map;
+  };
+
   return (
     <section id="contacts" className="py-20 lg:py-28 bg-gray-50 relative overflow-hidden">
       <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-orange-100/50 rounded-full blur-3xl"></div>
@@ -65,7 +116,7 @@ const Contact = () => {
               </div>
               
               <div className="bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 rounded-xl bg-orange-center justify-center mb-4">
+                <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center mb-4">
                   <svg className="w-6 h-6 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
                     <path d="M12 6v6l4 2"></path>
@@ -73,7 +124,6 @@ const Contact = () => {
                 </div>
                 <h4 className="font-semibold text-gray-900 mb-1">Режим работы</h4>
                 <p className="text-orange-600 font-medium">Пн-Сб: 9:00–18:00</p>
-                
               </div>
             </div>
             
@@ -81,12 +131,9 @@ const Contact = () => {
           </div>
           
           <div className="space-y-8">
+            {/* Контейнер для карты */}
             <div className="bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl h-64 relative overflow-hidden">
-              <img
-                src="/images/footer.jpeg"
-                alt="Карта проезда"
-                className="absolute inset-0 w-full h-full object-cover"
-              />
+              <div ref={mapRef} className="absolute inset-0 w-full h-full" />
             </div>
             
             <div className="bg-white rounded-2xl p-6 border border-gray-100">

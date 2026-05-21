@@ -32,7 +32,7 @@ async function submitCalculationForm(values: CalculationFormValues): Promise<voi
   formDataToSend.append('quantity', values.quantity.toString());
   formDataToSend.append('agree', values.agree ? 'yes' : 'no');
   // Hidden fields
-  formDataToSend.append('_subject', 'Заявка на расчет стоимости с лендинга MetalPro');
+  formDataToSend.append('_subject', 'Заявка на расчет стоимости с лендинга Стиль Мастер');
   formDataToSend.append('_captcha', 'false');
   formDataToSend.append('_template', 'table');
   // Optional: add _next if you have a thank you page
@@ -150,7 +150,7 @@ const CalculationForm: React.FC<CalculationFormProps> = ({ onSuccess, compact = 
         className="space-y-4"
       >
         {/* Скрытые поля для настройки FormSubmit */}
-        <input type="hidden" name="_subject" value="Заявка на расчет стоимости с лендинга MetalPro" />
+        <input type="hidden" name="_subject" value="Заявка на расчет стоимости с лендинга Стиль Мастер" />
         <input type="hidden" name="_captcha" value="false" />
         <input type="hidden" name="_template" value="table" />
         <input type="hidden" name="_next" value="https://yourdomain.com/thanks" />
