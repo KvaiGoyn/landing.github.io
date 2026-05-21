@@ -4,6 +4,17 @@ import React, { useEffect, useRef } from 'react';
 import ContactForm from '@/app/components/forms/ContactForm';
 import { Accordion, AccordionItem } from '@/app/components/ui/Accordion';
 
+// Объявление типов для Яндекс.Карт
+declare global {
+  interface Window {
+    ymaps?: {
+      ready: (callback: () => void) => void;
+      Map: new (element: HTMLElement | string, options: any) => any;
+      Placemark: new (coordinates: number[], properties?: any, options?: any) => any;
+    };
+  }
+}
+
 const Contact = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
@@ -14,16 +25,20 @@ const Contact = () => {
 
   useEffect(() => {
     // Проверяем, загружен ли уже API Яндекс.Карт
-    if (typeof window !== 'undefined' && !window.ymaps) {
-      const script = document.createElement('script');
-      script.src = `https://api-maps.yandex.ru/2.1/?apikey=${process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY}&lang=ru_RU`;
-      script.async = true;
-      script.onload = () => {
+    if (typeof window !== 'undefined') {
+      if (!window.ymaps) {
+        const script = document.createElement('script');
+        script.src = `https://api-maps.yandex.ru/2.1/?apikey=${process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY}&lang=ru_RU`;
+        script.async = true;
+        script.onload = () => {
+          if (window.ymaps) {
+            window.ymaps.ready(initMap);
+          }
+        };
+        document.head.appendChild(script);
+      } else {
         window.ymaps.ready(initMap);
-      };
-      document.head.appendChild(script);
-    } else if (window.ymaps) {
-      window.ymaps.ready(initMap);
+      }
     }
 
     return () => {
@@ -35,7 +50,7 @@ const Contact = () => {
   }, []);
 
   const initMap = () => {
-    if (!mapRef.current) return;
+    if (!mapRef.current || typeof window === 'undefined' || !window.ymaps) return;
 
     // Создаём карту
     const map = new window.ymaps.Map(mapRef.current, {
