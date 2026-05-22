@@ -104,7 +104,7 @@ const Advantages = () => {
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">Гарантия качества</h3>
               <p className="text-sm text-gray-200 leading-relaxed">
-                Даём гарантию до 20 лет на изделия. Каждый этап производства проходит контроль качества.
+                Даём гарантию на изделия. Каждый этап производства проходит контроль качества.
               </p>
             </div>
             

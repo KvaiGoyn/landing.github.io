@@ -136,7 +136,7 @@ const Services = () => {
             
             <div className="p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-1">Порошковая покраска</h3>
-              <p className="text-sm font-medium mb-4 text-gray-500">Защита от коррозии на 20 лет</p>
+              <p className="text-sm font-medium mb-4 text-gray-500">Защита от коррозии на долгий срок</p>
               <p className="text-gray-600 text-sm leading-relaxed mb-6">
                 Профессиональное покрытие в камерах полимеризации. Равномерный слой без подтёков, 
                 устойчивый к УФ-лучам и механическим повреждениям.

@@ -146,7 +146,7 @@ const Pricing = () => {
                       <path d="M20 6L9 17l-5-5"></path>
                     </svg>
                   </div>
-                  <span className="text-sm text-gray-700">Гарантия 20 лет</span>
+                  <span className="text-sm text-gray-700">Гарантия</span>
                 </li>
               </ul>
               
