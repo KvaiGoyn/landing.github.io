@@ -23,8 +23,14 @@ export interface EmailOptions {
  * Создает транспортер для SMTP Яндекса с несколькими попытками конфигурации
  */
 function createTransporter() {
+  // Проверяем, включена ли отправка через SMTP
+  const enableSmtp = process.env.ENABLE_SMTP !== 'false'; // по умолчанию true
+  if (!enableSmtp) {
+    throw new Error('SMTP отправка отключена (ENABLE_SMTP=false)');
+  }
+
   const host = process.env.SMTP_HOST || 'smtp.yandex.ru';
-  const port = parseInt(process.env.SMTP_PORT || '465');
+  const port = parseInt(process.env.SMTP_PORT || '465'); // По умолчанию порт 465 (SSL)
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
   const from = process.env.SMTP_FROM || user;
@@ -33,50 +39,35 @@ function createTransporter() {
     throw new Error('SMTP credentials are not configured. Please set SMTP_USER and SMTP_PASS environment variables.');
   }
 
-  console.log(`Creating SMTP transporter for ${user}@${host}:${port}`);
+  console.log(`[SMTP] Creating transporter for ${user}@${host}:${port}`);
 
-  // Попробуем несколько конфигураций для совместимости
-  const configs = [
-    {
-      name: 'smtp.yandex.ru', // Важно для Яндекс SMTP
-      host,
-      port: 465,
-      secure: true,
-      auth: { user, pass },
-      tls: { rejectUnauthorized: false }
+  // Оптимизированная конфигурация для продакшена с агрессивными таймаутами
+  const config = {
+    host,
+    port,
+    secure: port === 465, // true для порта 465, false для 587
+    auth: { user, pass },
+    tls: {
+      rejectUnauthorized: false // Игнорировать ошибки самоподписанных сертификатов
     },
-    {
-      name: 'smtp.yandex.ru',
-      host,
-      port: 587,
-      secure: false,
-      auth: { user, pass },
-      tls: { rejectUnauthorized: false }
-    },
-    {
-      name: 'smtp.yandex.ru',
-      host,
-      port: 587,
-      secure: true,
-      auth: { user, pass },
-      tls: { rejectUnauthorized: false }
-    },
-    {
-      name: 'smtp.yandex.ru',
-      host,
-      port: 25,
-      secure: false,
-      auth: { user, pass },
-      tls: { rejectUnauthorized: false }
-    }
-  ];
+    // АГРЕССИВНЫЕ таймауты для продакшена (быстрый отказ)
+    connectionTimeout: 5000,  // 5 секунд на установку соединения
+    greetingTimeout: 5000,    // 5 секунд на приветствие сервера
+    socketTimeout: 10000,     // 10 секунд на неактивность сокета
+    // Дополнительные настройки для надежности
+    logger: false,
+    debug: false,
+    // Имя для HELO/EHLO (важно для Яндекс)
+    name: 'smtp.yandex.ru',
+    // Отключаем пул соединений для однократной отправки
+    pool: false,
+    maxConnections: 1,
+    maxMessages: 1
+  };
 
-  // Выбираем конфигурацию из переменных окружения или первую рабочую
-  const selectedConfig = configs.find(c => c.port === port) || configs[0];
-  
-  console.log(`Using SMTP configuration: ${selectedConfig.name}`);
+  console.log(`[SMTP] Configuration: ${host}:${port}, secure: ${config.secure}, timeouts: ${config.connectionTimeout}ms`);
 
-  return nodemailer.createTransport(selectedConfig);
+  return nodemailer.createTransport(config);
 }
 
 /**

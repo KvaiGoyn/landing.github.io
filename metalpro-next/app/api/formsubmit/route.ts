@@ -26,55 +26,61 @@ export async function POST(request: NextRequest) {
     // Определяем тип формы для Telegram и Email
     const formType = detectFormType(formDataObject);
     
-    // Отправляем email через SMTP Яндекс (в фоновом режиме, не блокируем ответ)
-    try {
-      const emailData: EmailFormData = {
-        name: formDataObject.name || 'Не указано',
-        phone: formDataObject.phone || 'Не указано',
-        email: formDataObject.email,
-        message: formDataObject.message,
-        formType,
-        preferredTime: formDataObject.preferredTime,
-        comment: formDataObject.comment,
-        agree: formDataObject.agree,
-        additionalFields: formDataObject,
-      };
-      
-      const emailResult = await sendFormEmail(emailData);
-      if (emailResult.success) {
-        console.log('Email sent successfully:', emailResult.messageId);
-      } else {
-        console.warn('Failed to send email:', emailResult.error);
-        // Не прерываем выполнение, только логируем
-      }
-    } catch (emailError) {
-      // Логируем ошибку, но не прерываем выполнение
-      console.warn('Failed to send email notification:', emailError);
-    }
+    // Подготавливаем данные для email
+    const emailData: EmailFormData = {
+      name: formDataObject.name || 'Не указано',
+      phone: formDataObject.phone || 'Не указано',
+      email: formDataObject.email,
+      message: formDataObject.message,
+      formType,
+      preferredTime: formDataObject.preferredTime,
+      comment: formDataObject.comment,
+      agree: formDataObject.agree,
+      additionalFields: formDataObject,
+    };
     
-    // Отправляем уведомление в Telegram (в фоновом режиме, не блокируем ответ)
-    try {
-      await sendFormSubmissionToTelegram({
-        name: formDataObject.name || 'Не указано',
-        phone: formDataObject.phone || 'Не указано',
-        email: formDataObject.email,
-        message: formDataObject.message,
-        formType,
-        preferredTime: formDataObject.preferredTime,
-        comment: formDataObject.comment,
-        agree: formDataObject.agree,
-        additionalFields: formDataObject,
-      });
-      console.log('Telegram notification sent successfully');
-    } catch (telegramError) {
-      // Логируем ошибку, но не прерываем выполнение
-      console.warn('Failed to send Telegram notification:', telegramError);
-    }
-    
-    // Определяем URL для редиректа
+    // Определяем URL для редиректа (делаем это до асинхронных операций)
     const redirectUrl = formDataObject._next || '/thank-you';
     
-    // Делаем редирект на страницу благодарности
+    // АСИНХРОННАЯ отправка email и Telegram (не блокируем ответ пользователю)
+    // Запускаем в фоне, не ждем завершения
+    (async () => {
+      try {
+        // Отправляем email через SMTP Яндекс
+        const emailResult = await sendFormEmail(emailData);
+        if (emailResult.success) {
+          console.log('Email sent successfully:', emailResult.messageId);
+        } else {
+          console.warn('Failed to send email:', emailResult.error);
+        }
+      } catch (emailError) {
+        console.warn('Failed to send email notification:', emailError);
+      }
+      
+      try {
+        // Отправляем уведомление в Telegram
+        await sendFormSubmissionToTelegram({
+          name: emailData.name,
+          phone: emailData.phone,
+          email: emailData.email,
+          message: emailData.message,
+          formType,
+          preferredTime: emailData.preferredTime,
+          comment: emailData.comment,
+          agree: emailData.agree,
+          additionalFields: emailData.additionalFields,
+        });
+        console.log('Telegram notification sent successfully');
+      } catch (telegramError) {
+        console.warn('Failed to send Telegram notification:', telegramError);
+      }
+    })().catch(error => {
+      // Глобальный catch для фоновой задачи
+      console.error('Background task error:', error);
+    });
+    
+    // НЕМЕДЛЕННЫЙ редирект на страницу благодарности
+    // Пользователь не ждет завершения отправки email/telegram
     return NextResponse.redirect(new URL(redirectUrl, request.url), 302);
     
   } catch (error) {
