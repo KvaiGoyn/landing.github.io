@@ -19,15 +19,13 @@ const CalculationForm: React.FC<CalculationFormProps> = ({ onSuccess, compact = 
       )}
       
       <form
-        action="https://formsubmit.co/nezabut123@gmail.com"
+        action="/api/formsubmit"
         method="POST"
         className="space-y-4"
       >
-        {/* Скрытые поля для настройки FormSubmit */}
+        {/* Отправка через наш прокси-маршрут для отправки в FormSubmit и Telegram */}
         <input type="hidden" name="_subject" value="Заявка на расчет стоимости с лендинга Стиль Мастер" />
-        <input type="hidden" name="_captcha" value="false" />
-        <input type="hidden" name="_template" value="table" />
-        <input type="hidden" name="_next" value="https://yourdomain.com/thanks" />
+        <input type="hidden" name="_next" value="/thank-you" />
         
         {/* Скрытые поля параметров расчета (если нужны) */}
         <input type="hidden" name="serviceType" value="Другое" />

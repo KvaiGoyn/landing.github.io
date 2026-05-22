@@ -1,13 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { sendFormSubmissionToTelegram, detectFormType } from '@/app/utils/telegram';
 
 /**
  * Прокси-маршрут для отправки форм на FormSubmit.co
  * Решает проблему CORS, отправляя запросы через серверную часть
+ * Дополнительно отправляет уведомление в Telegram бота
  */
 export async function POST(request: NextRequest) {
   try {
     // Получаем данные из запроса
     const formData = await request.formData();
+    
+    // Преобразуем FormData в объект для Telegram
+    const formDataObject: Record<string, string> = {};
+    for (const [key, value] of formData.entries()) {
+      if (typeof value === 'string') {
+        formDataObject[key] = value;
+      } else if (value instanceof File) {
+        // Для файлов сохраняем только имя
+        formDataObject[key] = value.name;
+      }
+    }
     
     // Получаем email получателя из переменной окружения или используем дефолтный
     const recipientEmail = process.env.FORM_SUBMIT_RECIPIENT_EMAIL || 'nezabut123@gmail.com';
@@ -45,10 +58,10 @@ export async function POST(request: NextRequest) {
       const errorText = await response.text();
       console.error('FormSubmit error:', errorText);
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           message: 'Ошибка при отправке формы на сервер FormSubmit',
-          error: errorText 
+          error: errorText
         },
         { status: response.status }
       );
@@ -57,18 +70,37 @@ export async function POST(request: NextRequest) {
     // Парсим JSON ответ от FormSubmit
     const data = await response.json();
     
-    // Возвращаем успешный ответ
-    return NextResponse.json({
-      success: true,
-      message: 'Форма успешно отправлена',
-      data,
-    });
+    // Отправляем уведомление в Telegram (в фоновом режиме, не блокируем ответ)
+    try {
+      const formType = detectFormType(formDataObject);
+      await sendFormSubmissionToTelegram({
+        name: formDataObject.name || 'Не указано',
+        phone: formDataObject.phone || 'Не указано',
+        email: formDataObject.email,
+        message: formDataObject.message,
+        formType,
+        preferredTime: formDataObject.preferredTime,
+        comment: formDataObject.comment,
+        agree: formDataObject.agree,
+        additionalFields: formDataObject,
+      });
+      console.log('Telegram notification sent successfully');
+    } catch (telegramError) {
+      // Логируем ошибку, но не прерываем выполнение
+      console.warn('Failed to send Telegram notification:', telegramError);
+    }
+    
+    // Определяем URL для редиректа
+    const redirectUrl = formDataObject._next || '/thank-you';
+    
+    // Делаем редирект на страницу благодарности
+    return NextResponse.redirect(new URL(redirectUrl, request.url), 302);
     
   } catch (error) {
     console.error('Proxy server error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         message: 'Внутренняя ошибка сервера при обработке формы',
         error: error instanceof Error ? error.message : 'Unknown error'
       },

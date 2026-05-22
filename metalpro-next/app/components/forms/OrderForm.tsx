@@ -71,20 +71,56 @@ const OrderForm: React.FC<OrderFormProps> = ({
       },
     },
     onSubmit: async (formValues) => {
-      const response = await sendOrderForm(formValues);
+      // Создаем FormData для отправки на наш прокси-маршрут
+      const formData = new FormData();
       
-      if (!response.success) {
-        throw new Error(response.message || 'Ошибка при отправке формы');
+      // Добавляем все поля формы
+      Object.entries(formValues).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          formData.append(key, String(value));
+        }
+      });
+      
+      // Добавляем скрытые поля для FormSubmit и редиректа
+      formData.append('_subject', 'Заказ услуги с лендинга Стиль Мастер');
+      formData.append('_next', '/thank-you');
+      formData.append('_captcha', 'false');
+      formData.append('_template', 'table');
+      formData.append('formType', 'order-form');
+      
+      // Отправляем данные на наш API маршрут
+      const response = await fetch('/api/formsubmit', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Ошибка при отправке формы: ${errorText}`);
       }
       
-      return;
+      // Проверяем, является ли ответ редиректом
+      if (response.redirected) {
+        // Если редирект выполнен сервером, переходим на страницу благодарности
+        window.location.href = response.url;
+      } else {
+        // Если нет редиректа, парсим JSON ответ (на случай ошибки)
+        const data = await response.json();
+        if (data.success === false) {
+          throw new Error(data.message || 'Ошибка при отправке формы');
+        }
+        // Успешная отправка, но без редиректа - редиректим вручную
+        window.location.href = '/thank-you';
+      }
     },
     onSuccess: () => {
+      // Этот колбэк будет вызван после успешного выполнения onSubmit
+      // Но поскольку мы уже выполнили редирект в onSubmit, здесь можно просто закрыть модалку
       if (onSuccess) {
         onSuccess();
       } else {
         closeModal();
-        alert('Заказ успешно оформлен! Наш специалист свяжется с вами для уточнения деталей.');
+        // Не показываем alert, так как пользователь уже будет на странице благодарности
       }
     },
     onError: (error) => {

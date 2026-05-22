@@ -27,15 +27,13 @@ const MeasurementForm: React.FC<MeasurementFormProps> = ({ onSuccess, compact = 
       )}
       
       <form
-        action="https://formsubmit.co/nezabut123@gmail.com"
+        action="/api/formsubmit"
         method="POST"
         className="space-y-4"
       >
-        {/* Скрытые поля для настройки FormSubmit */}
+        {/* Отправка через наш прокси-маршрут для отправки в FormSubmit и Telegram */}
         <input type="hidden" name="_subject" value="Заявка на вызов замерщика с лендинга Стиль Мастер" />
-        <input type="hidden" name="_captcha" value="false" />
-        <input type="hidden" name="_template" value="table" />
-        <input type="hidden" name="_next" value="https://yourdomain.com/thanks" />
+        <input type="hidden" name="_next" value="/thank-you" />
         
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
