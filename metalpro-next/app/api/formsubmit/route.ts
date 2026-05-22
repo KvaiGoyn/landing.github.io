@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendFormSubmissionToTelegram, detectFormType } from '@/app/utils/telegram';
+import { sendFormEmail, EmailFormData } from '@/app/services/email';
 
 /**
- * Прокси-маршрут для отправки форм на FormSubmit.co
- * Решает проблему CORS, отправляя запросы через серверную часть
- * Дополнительно отправляет уведомление в Telegram бота
+ * Маршрут для обработки форм с отправкой заявок
+ * Отправляет email через SMTP Яндекс и уведомление в Telegram бота
+ * Заменяет FormSubmit.co на собственную реализацию с Nodemailer
  */
 export async function POST(request: NextRequest) {
   try {
@@ -22,57 +23,37 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    // Получаем email получателя из переменной окружения или используем дефолтный
-    const recipientEmail = process.env.FORM_SUBMIT_RECIPIENT_EMAIL || 'nezabut123@gmail.com';
+    // Определяем тип формы для Telegram и Email
+    const formType = detectFormType(formDataObject);
     
-    // Создаем новый FormData для отправки на FormSubmit
-    const formDataToSend = new FormData();
-    
-    // Копируем все поля из исходного FormData
-    for (const [key, value] of formData.entries()) {
-      formDataToSend.append(key, value);
+    // Отправляем email через SMTP Яндекс (в фоновом режиме, не блокируем ответ)
+    try {
+      const emailData: EmailFormData = {
+        name: formDataObject.name || 'Не указано',
+        phone: formDataObject.phone || 'Не указано',
+        email: formDataObject.email,
+        message: formDataObject.message,
+        formType,
+        preferredTime: formDataObject.preferredTime,
+        comment: formDataObject.comment,
+        agree: formDataObject.agree,
+        additionalFields: formDataObject,
+      };
+      
+      const emailResult = await sendFormEmail(emailData);
+      if (emailResult.success) {
+        console.log('Email sent successfully:', emailResult.messageId);
+      } else {
+        console.warn('Failed to send email:', emailResult.error);
+        // Не прерываем выполнение, только логируем
+      }
+    } catch (emailError) {
+      // Логируем ошибку, но не прерываем выполнение
+      console.warn('Failed to send email notification:', emailError);
     }
-    
-    // Добавляем обязательные скрытые поля, если их нет
-    if (!formDataToSend.has('_subject')) {
-      formDataToSend.append('_subject', 'Заявка с лендинга Стиль Мастер');
-    }
-    if (!formDataToSend.has('_captcha')) {
-      formDataToSend.append('_captcha', 'false');
-    }
-    if (!formDataToSend.has('_template')) {
-      formDataToSend.append('_template', 'table');
-    }
-    
-    // Отправляем запрос на FormSubmit
-    const response = await fetch(`https://formsubmit.co/ajax/${recipientEmail}`, {
-      method: 'POST',
-      body: formDataToSend,
-      headers: {
-        'Accept': 'application/json',
-      },
-    });
-    
-    // Проверяем статус ответа
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('FormSubmit error:', errorText);
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Ошибка при отправке формы на сервер FormSubmit',
-          error: errorText
-        },
-        { status: response.status }
-      );
-    }
-    
-    // Парсим JSON ответ от FormSubmit
-    const data = await response.json();
     
     // Отправляем уведомление в Telegram (в фоновом режиме, не блокируем ответ)
     try {
-      const formType = detectFormType(formDataObject);
       await sendFormSubmissionToTelegram({
         name: formDataObject.name || 'Не указано',
         phone: formDataObject.phone || 'Не указано',
