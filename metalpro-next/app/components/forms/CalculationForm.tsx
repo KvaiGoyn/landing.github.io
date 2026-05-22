@@ -38,7 +38,7 @@ async function submitCalculationForm(values: CalculationFormValues): Promise<voi
   // Optional: add _next if you have a thank you page
   // formDataToSend.append('_next', 'https://yourdomain.com/thanks');
 
-  const response = await fetch('https://formsubmit.co/ajax/nezabut123@gmail.com', {
+  const response = await fetch('/api/formsubmit', {
     method: 'POST',
     body: formDataToSend,
   });

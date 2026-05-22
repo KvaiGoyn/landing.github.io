@@ -44,7 +44,7 @@ async function submitConsultationForm(values: ConsultationFormValues): Promise<v
   formDataToSend.append('_captcha', 'false');
   formDataToSend.append('_template', 'table');
 
-  const response = await fetch('https://formsubmit.co/ajax/nezabut123@gmail.com', {
+  const response = await fetch('/api/formsubmit', {
     method: 'POST',
     body: formDataToSend,
   });
@@ -164,8 +164,8 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
         <h3 className="text-xl font-bold text-gray-900 mb-6">Запись на консультацию</h3>
       )}
       
-      <form 
-        action="https://formsubmit.co/nezabut123@gmail.com" 
+      <form
+        action="/api/formsubmit"
         method="POST"
         {...formProps}
         className="space-y-4"
