@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { emailLogger } from '@/app/utils/logger';
 
 export interface EmailFormData {
   name: string;
@@ -204,6 +205,73 @@ export async function sendFormEmail(data: EmailFormData): Promise<{ success: boo
       error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
+}
+
+/**
+ * Отправляет email с повторными попытками
+ */
+export async function sendFormEmailWithRetry(
+  data: EmailFormData,
+  options?: {
+    maxRetries?: number;
+    initialDelayMs?: number;
+    submissionId?: string;
+  }
+): Promise<{
+  success: boolean;
+  messageId?: string;
+  error?: string;
+  attempts: number;
+  finalAttempt: boolean;
+}> {
+  const maxRetries = options?.maxRetries ?? 3;
+  const initialDelayMs = options?.initialDelayMs ?? 5000;
+  const submissionId = options?.submissionId ?? 'unknown';
+  
+  let lastError: string | undefined;
+  let attempts = 0;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    attempts = attempt;
+    
+    console.log(`[Email] Attempt ${attempt}/${maxRetries} for submission ${submissionId}`);
+    
+    try {
+      const result = await sendFormEmail(data);
+      
+      if (result.success) {
+        console.log(`[Email] Success on attempt ${attempt} for submission ${submissionId}`);
+        return {
+          success: true,
+          messageId: result.messageId,
+          attempts,
+          finalAttempt: attempt === maxRetries,
+        };
+      } else {
+        lastError = result.error;
+        console.warn(`[Email] Attempt ${attempt} failed: ${result.error}`);
+      }
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : 'Unknown error';
+      console.warn(`[Email] Attempt ${attempt} threw error:`, error);
+    }
+    
+    // Если это не последняя попытка, ждем перед следующей
+    if (attempt < maxRetries) {
+      // Экспоненциальная задержка: 5s, 10s, 20s...
+      const delay = initialDelayMs * Math.pow(2, attempt - 1);
+      console.log(`[Email] Waiting ${delay}ms before next attempt...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  
+  console.error(`[Email] All ${maxRetries} attempts failed for submission ${submissionId}`);
+  return {
+    success: false,
+    error: lastError || 'All retry attempts failed',
+    attempts,
+    finalAttempt: true,
+  };
 }
 
 /**

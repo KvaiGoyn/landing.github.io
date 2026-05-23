@@ -115,6 +115,71 @@ export async function sendTelegramNotification(
 }
 
 /**
+ * Отправляет сообщение в Telegram с повторными попытками
+ */
+export async function sendTelegramNotificationWithRetry(
+  message: string,
+  options?: {
+    parseMode?: 'Markdown' | 'HTML';
+    disableNotification?: boolean;
+    maxRetries?: number;
+    initialDelayMs?: number;
+    submissionId?: string;
+  }
+): Promise<{
+  success: boolean;
+  attempts: number;
+  finalAttempt: boolean;
+}> {
+  const maxRetries = options?.maxRetries ?? 3;
+  const initialDelayMs = options?.initialDelayMs ?? 3000;
+  const submissionId = options?.submissionId ?? 'unknown';
+  
+  let attempts = 0;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    attempts = attempt;
+    
+    console.log(`[Telegram] Attempt ${attempt}/${maxRetries} for submission ${submissionId}`);
+    
+    try {
+      const success = await sendTelegramNotification(message, {
+        parseMode: options?.parseMode,
+        disableNotification: options?.disableNotification,
+      });
+      
+      if (success) {
+        console.log(`[Telegram] Success on attempt ${attempt} for submission ${submissionId}`);
+        return {
+          success: true,
+          attempts,
+          finalAttempt: attempt === maxRetries,
+        };
+      } else {
+        console.warn(`[Telegram] Attempt ${attempt} failed (API returned false)`);
+      }
+    } catch (error) {
+      console.warn(`[Telegram] Attempt ${attempt} threw error:`, error);
+    }
+    
+    // Если это не последняя попытка, ждем перед следующей
+    if (attempt < maxRetries) {
+      // Экспоненциальная задержка: 3s, 6s, 12s...
+      const delay = initialDelayMs * Math.pow(2, attempt - 1);
+      console.log(`[Telegram] Waiting ${delay}ms before next attempt...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  
+  console.error(`[Telegram] All ${maxRetries} attempts failed for submission ${submissionId}`);
+  return {
+    success: false,
+    attempts,
+    finalAttempt: true,
+  };
+}
+
+/**
  * Отправляет уведомление о новой заявке в Telegram
  */
 export async function sendFormSubmissionToTelegram(data: TelegramMessage): Promise<boolean> {
@@ -124,6 +189,40 @@ export async function sendFormSubmissionToTelegram(data: TelegramMessage): Promi
   } catch (error) {
     console.error('Error preparing Telegram notification:', error);
     return false;
+  }
+}
+
+/**
+ * Отправляет уведомление о новой заявке в Telegram с повторными попытками
+ */
+export async function sendFormSubmissionToTelegramWithRetry(
+  data: TelegramMessage,
+  options?: {
+    maxRetries?: number;
+    initialDelayMs?: number;
+    submissionId?: string;
+  }
+): Promise<{
+  success: boolean;
+  attempts: number;
+  finalAttempt: boolean;
+}> {
+  try {
+    const message = formatTelegramMessage(data);
+    return await sendTelegramNotificationWithRetry(message, {
+      parseMode: 'Markdown',
+      disableNotification: false,
+      maxRetries: options?.maxRetries,
+      initialDelayMs: options?.initialDelayMs,
+      submissionId: options?.submissionId,
+    });
+  } catch (error) {
+    console.error('[Telegram] Error preparing Telegram notification:', error);
+    return {
+      success: false,
+      attempts: 0,
+      finalAttempt: true,
+    };
   }
 }
 
