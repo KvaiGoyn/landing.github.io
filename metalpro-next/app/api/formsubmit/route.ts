@@ -3,6 +3,31 @@ import { sendFormSubmissionToTelegram, detectFormType } from '@/app/utils/telegr
 import { sendFormEmail, EmailFormData } from '@/app/services/email';
 
 /**
+ * Получает базовый URL для редиректа на основе заголовков запроса.
+ * Использует x-forwarded-proto и host для определения корректного домена продакшена.
+ * Это предотвращает редирект на localhost при работе за reverse proxy.
+ */
+function getBaseUrl(request: NextRequest): string {
+  // Пытаемся получить протокол из заголовка x-forwarded-proto (если за прокси)
+  const proto = request.headers.get('x-forwarded-proto') || 'https';
+  // Получаем хост из заголовка host (или из request.url)
+  let host = request.headers.get('host');
+  if (!host) {
+    // Если host не передан, извлекаем из request.url
+    try {
+      const url = new URL(request.url);
+      host = url.host;
+    } catch {
+      host = 'localhost:3000';
+    }
+  }
+  // Убираем порт если стандартный (80, 443)
+  if (host.includes(':80')) host = host.replace(':80', '');
+  if (host.includes(':443')) host = host.replace(':443', '');
+  return `${proto}://${host}`;
+}
+
+/**
  * Маршрут для обработки форм с отправкой заявок
  * Отправляет email через SMTP Яндекс и уведомление в Telegram бота
  * Заменяет FormSubmit.co на собственную реализацию с Nodemailer
@@ -40,7 +65,10 @@ export async function POST(request: NextRequest) {
     };
     
     // Определяем URL для редиректа (делаем это до асинхронных операций)
-    const redirectUrl = formDataObject._next || '/thank-you';
+    const redirectPath = formDataObject._next || '/thank-you';
+    // Строим полный URL с корректным базовым доменом
+    const baseUrl = getBaseUrl(request);
+    const redirectUrl = new URL(redirectPath, baseUrl).toString();
     
     // АСИНХРОННАЯ отправка email и Telegram (не блокируем ответ пользователю)
     // Запускаем в фоне, не ждем завершения
@@ -81,7 +109,7 @@ export async function POST(request: NextRequest) {
     
     // НЕМЕДЛЕННЫЙ редирект на страницу благодарности
     // Пользователь не ждет завершения отправки email/telegram
-    return NextResponse.redirect(new URL(redirectUrl, request.url), 302);
+    return NextResponse.redirect(redirectUrl, 302);
     
   } catch (error) {
     console.error('Proxy server error:', error);
