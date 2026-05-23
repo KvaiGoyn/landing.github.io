@@ -36,10 +36,12 @@ function createTransporter() {
   const from = process.env.SMTP_FROM || user;
 
   if (!user || !pass) {
+    console.error('[SMTP] Missing credentials: SMTP_USER or SMTP_PASS not set');
     throw new Error('SMTP credentials are not configured. Please set SMTP_USER and SMTP_PASS environment variables.');
   }
 
   console.log(`[SMTP] Creating transporter for ${user}@${host}:${port}`);
+  console.log(`[SMTP] ENABLE_SMTP: ${enableSmtp}, SMTP_FROM: ${from}`);
 
   // Оптимизированная конфигурация для продакшена с агрессивными таймаутами
   const config = {
@@ -66,6 +68,7 @@ function createTransporter() {
   };
 
   console.log(`[SMTP] Configuration: ${host}:${port}, secure: ${config.secure}, timeouts: ${config.connectionTimeout}ms`);
+  console.log(`[SMTP] TLS rejectUnauthorized: ${config.tls.rejectUnauthorized}`);
 
   return nodemailer.createTransport(config);
 }
@@ -161,10 +164,24 @@ export function formatFormEmail(data: EmailFormData): EmailOptions {
  */
 export async function sendFormEmail(data: EmailFormData): Promise<{ success: boolean; messageId?: string; error?: string }> {
   try {
+    console.log('[Email] Starting email send for form type:', data.formType);
+    console.log('[Email] Data:', JSON.stringify(data, null, 2));
+    
     const transporter = createTransporter();
+    console.log('[Email] Transporter created');
+    
     const emailOptions = formatFormEmail(data);
+    console.log('[Email] Email options prepared:', {
+      to: emailOptions.to,
+      subject: emailOptions.subject,
+      htmlLength: emailOptions.html?.length,
+      textLength: emailOptions.text?.length,
+    });
+    
     const from = process.env.SMTP_FROM || process.env.SMTP_USER;
+    console.log('[Email] Sender:', from);
 
+    console.log('[Email] Attempting to send mail via SMTP...');
     const info = await transporter.sendMail({
       from: `"Стиль Мастер" <${from}>`,
       to: emailOptions.to,
@@ -173,13 +190,15 @@ export async function sendFormEmail(data: EmailFormData): Promise<{ success: boo
       text: emailOptions.text,
     });
 
-    console.log('Email sent successfully:', info.messageId);
+    console.log('[Email] Email sent successfully:', info.messageId);
+    console.log('[Email] SMTP response:', info.response);
     return {
       success: true,
       messageId: info.messageId,
     };
   } catch (error) {
-    console.error('Failed to send email:', error);
+    console.error('[Email] Failed to send email:', error);
+    console.error('[Email] Error stack:', error instanceof Error ? error.stack : 'No stack');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
