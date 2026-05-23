@@ -98,8 +98,8 @@ const Contact = () => {
                   </svg>
                 </div>
                 <h4 className="font-semibold text-gray-900 mb-1">Телефон</h4>
-                <a href="tel:+71234567890" className="text-orange-600 hover:text-orange-700 font-medium">
-                  8 (123) 456-78-90
+                <a href="tel:+79122220241" className="text-orange-600 hover:text-orange-700 font-medium">
+                  +7 (912) 222-02-41
                 </a>
                 <p className="text-sm text-gray-500 mt-1">Бесплатно по России</p>
               </div>

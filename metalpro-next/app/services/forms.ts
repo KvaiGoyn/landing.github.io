@@ -166,7 +166,7 @@ export function validateRequired(value: string): boolean {
 export function generateMockFormData<T extends Record<string, any>>(formType: string): T {
   const baseData = {
     name: 'Иван Иванов',
-    phone: '+7 (999) 123-45-67',
+    phone: '+7 (912) 222-02-41',
     email: 'test@example.com',
     message: 'Тестовое сообщение',
   };
@@ -178,13 +178,13 @@ export function generateMockFormData<T extends Record<string, any>>(formType: st
     },
     callback: {
       name: 'Петр Петров',
-      phone: '+7 (912) 345-67-89',
+      phone: '+7 (912) 222-02-41',
       preferredTime: '14:00-18:00',
       comment: 'Позвонить после 15:00',
     },
     consultation: {
       name: 'Сергей Сергеев',
-      phone: '+7 (987) 654-32-10',
+      phone: '+7 (912) 222-02-41',
       service: 'Сварка металлоконструкций',
       details: 'Нужна консультация по выбору материала',
     },

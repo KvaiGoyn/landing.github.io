@@ -4,7 +4,7 @@ curl -X POST "https://formsubmit.co/ajax/nezabut123@gmail.com" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Test User",
-    "phone": "+79991234567",
+    "phone": "+79122220241",
     "email": "test@example.com",
     "message": "Test message",
     "agree": "yes",

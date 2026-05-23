@@ -43,10 +43,10 @@ export default function ThankYouPage() {
           <p className="text-sm text-gray-500">
             Если у вас срочный вопрос, звоните прямо сейчас:
             <a
-              href="tel:+79991234567"
+              href="tel:+79122220241"
               className="block text-orange-600 font-semibold text-lg mt-1 hover:text-orange-700"
             >
-              +7 (999) 123-45-67
+              +7 (912) 222-02-41
             </a>
           </p>
         </div>

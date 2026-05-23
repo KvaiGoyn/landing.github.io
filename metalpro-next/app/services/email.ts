@@ -22,6 +22,7 @@ export interface EmailOptions {
 
 /**
  * Создает транспортер для SMTP Яндекса с несколькими попытками конфигурации
+ * Поддерживает fallback на альтернативные порты и хосты
  */
 function createTransporter() {
   // Проверяем, включена ли отправка через SMTP
@@ -30,8 +31,6 @@ function createTransporter() {
     throw new Error('SMTP отправка отключена (ENABLE_SMTP=false)');
   }
 
-  const host = process.env.SMTP_HOST || 'smtp.yandex.ru';
-  const port = parseInt(process.env.SMTP_PORT || '465'); // По умолчанию порт 465 (SSL)
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
   const from = process.env.SMTP_FROM || user;
@@ -41,37 +40,73 @@ function createTransporter() {
     throw new Error('SMTP credentials are not configured. Please set SMTP_USER and SMTP_PASS environment variables.');
   }
 
-  console.log(`[SMTP] Creating transporter for ${user}@${host}:${port}`);
+  console.log(`[SMTP] Creating transporter for ${user}`);
   console.log(`[SMTP] ENABLE_SMTP: ${enableSmtp}, SMTP_FROM: ${from}`);
 
-  // Оптимизированная конфигурация для продакшена с агрессивными таймаутами
-  const config = {
-    host,
-    port,
-    secure: port === 465, // true для порта 465, false для 587
-    auth: { user, pass },
-    tls: {
-      rejectUnauthorized: false // Игнорировать ошибки самоподписанных сертификатов
-    },
-    // АГРЕССИВНЫЕ таймауты для продакшена (быстрый отказ)
-    connectionTimeout: 5000,  // 5 секунд на установку соединения
-    greetingTimeout: 5000,    // 5 секунд на приветствие сервера
-    socketTimeout: 10000,     // 10 секунд на неактивность сокета
-    // Дополнительные настройки для надежности
-    logger: false,
-    debug: false,
-    // Имя для HELO/EHLO (важно для Яндекс)
-    name: 'smtp.yandex.ru',
-    // Отключаем пул соединений для однократной отправки
-    pool: false,
-    maxConnections: 1,
-    maxMessages: 1
-  };
+  // Определяем возможные конфигурации для fallback
+  const configs = [
+    { host: process.env.SMTP_HOST || 'smtp.yandex.ru', port: 465, secure: true, name: 'Primary SSL (465)' },
+    { host: process.env.SMTP_HOST || 'smtp.yandex.ru', port: 587, secure: false, name: 'Primary TLS (587)' },
+    { host: 'smtp.yandex.com', port: 465, secure: true, name: 'Alt SSL (465)' },
+    { host: 'smtp.yandex.com', port: 587, secure: false, name: 'Alt TLS (587)' },
+  ];
 
-  console.log(`[SMTP] Configuration: ${host}:${port}, secure: ${config.secure}, timeouts: ${config.connectionTimeout}ms`);
-  console.log(`[SMTP] TLS rejectUnauthorized: ${config.tls.rejectUnauthorized}`);
+  // Если в env указан конкретный порт, используем только его
+  const envPort = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT) : null;
+  const envHost = process.env.SMTP_HOST;
+  
+  let configsToTry = configs;
+  if (envPort && envHost) {
+    // Используем только указанную конфигурацию
+    configsToTry = [{ host: envHost, port: envPort, secure: envPort === 465, name: 'Custom config' }];
+    console.log(`[SMTP] Using custom configuration: ${envHost}:${envPort}`);
+  }
 
-  return nodemailer.createTransport(config);
+  let lastError: any = null;
+  
+  for (const config of configsToTry) {
+    console.log(`[SMTP] Trying ${config.name}: ${config.host}:${config.port} (secure: ${config.secure})`);
+    
+    const transporterConfig = {
+      host: config.host,
+      port: config.port,
+      secure: config.secure,
+      auth: { user, pass },
+      tls: {
+        rejectUnauthorized: false // Игнорировать ошибки самоподписанных сертификатов
+      },
+      // АГРЕССИВНЫЕ таймауты для продакшена (быстрый отказ)
+      connectionTimeout: 10000,  // 10 секунд на установку соединения
+      greetingTimeout: 10000,    // 10 секунд на приветствие сервера
+      socketTimeout: 15000,      // 15 секунд на неактивность сокета
+      // Дополнительные настройки для надежности
+      logger: false,
+      debug: false,
+      // Имя для HELO/EHLO (важно для Яндекс)
+      name: config.host,
+      // Отключаем пул соединений для однократной отправки
+      pool: false,
+      maxConnections: 1,
+      maxMessages: 1
+    };
+
+    try {
+      const transporter = nodemailer.createTransport(transporterConfig);
+      // Быстрая проверка соединения
+      await transporter.verify();
+      console.log(`[SMTP] Successfully connected via ${config.name}: ${config.host}:${config.port}`);
+      console.log(`[SMTP] Configuration: secure=${config.secure}, timeouts: ${transporterConfig.connectionTimeout}ms`);
+      return transporter;
+    } catch (error) {
+      console.warn(`[SMTP] Connection failed for ${config.name}: ${error.message}`);
+      lastError = error;
+      // Продолжаем пробовать следующую конфигурацию
+    }
+  }
+
+  console.error('[SMTP] All SMTP configurations failed');
+  console.error('[SMTP] Last error:', lastError?.message || lastError);
+  throw new Error(`Не удалось подключиться к SMTP серверу. Проверьте настройки firewall и доступность портов 465/587. Последняя ошибка: ${lastError?.message || 'unknown'}`);
 }
 
 /**

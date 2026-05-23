@@ -110,7 +110,7 @@ export default function RootLayout({
                     "addressRegion": "Московская область",
                     "addressCountry": "RU"
                   },
-                  "telephone": "+7 (495) 123-45-67",
+                  "telephone": "+7 (912) 222-02-41",
                   "email": "info@stil-master.ru",
                   "openingHours": "Mo-Fr 09:00-18:00",
                   "priceRange": "₽₽",
