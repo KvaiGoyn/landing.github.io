@@ -1,5 +1,5 @@
-:HL["/landing.github.io/_next/static/chunks/0_k.fwab-ipys.css","style"]
+:HL["/landing.github.io/_next/static/chunks/0ff9mk1iw4dio.css","style"]
 :HL["/images/case_main.jpeg","image",{"type":"image/jpeg","fetchPriority":"high"}]
 :HL["/images/Hero_optimized.webm","video",{"type":"video/webm","fetchPriority":"high"}]
 :HL["/logo.svg","image",{"type":"image/svg+xml"}]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"/_not-found","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"fuUkR9cbIsr_l13mEsTTI"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"/_not-found","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"T6kOr-2UJ5hrGRvEyGmG2"}

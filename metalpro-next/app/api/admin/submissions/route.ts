@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   const authToken = request.headers.get('X-Admin-Token') || 
                    new URL(request.url).searchParams.get('token');
   
-  const expectedToken = process.env.ADMIN_TOKEN || 'dev-admin-token';
+  const expectedToken = process.env.ADMIN_TOKEN;
   
   if (!authToken || authToken !== expectedToken) {
     return NextResponse.json(
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const authToken = request.headers.get('X-Admin-Token');
-    const expectedToken = process.env.ADMIN_TOKEN || 'dev-admin-token';
+    const expectedToken = process.env.ADMIN_TOKEN;
     
     if (!authToken || authToken !== expectedToken) {
       return NextResponse.json(

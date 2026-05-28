@@ -24,7 +24,7 @@ export interface EmailOptions {
  * Создает транспортер для SMTP Яндекса с несколькими попытками конфигурации
  * Поддерживает fallback на альтернативные порты и хосты
  */
-function createTransporter() {
+async function createTransporter() {
   // Проверяем, включена ли отправка через SMTP
   const enableSmtp = process.env.ENABLE_SMTP !== 'false'; // по умолчанию true
   if (!enableSmtp) {
@@ -98,7 +98,8 @@ function createTransporter() {
       console.log(`[SMTP] Configuration: secure=${config.secure}, timeouts: ${transporterConfig.connectionTimeout}ms`);
       return transporter;
     } catch (error) {
-      console.warn(`[SMTP] Connection failed for ${config.name}: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.warn(`[SMTP] Connection failed for ${config.name}: ${errorMessage}`);
       lastError = error;
       // Продолжаем пробовать следующую конфигурацию
     }
@@ -203,7 +204,7 @@ export async function sendFormEmail(data: EmailFormData): Promise<{ success: boo
     console.log('[Email] Starting email send for form type:', data.formType);
     console.log('[Email] Data:', JSON.stringify(data, null, 2));
     
-    const transporter = createTransporter();
+    const transporter = await createTransporter();
     console.log('[Email] Transporter created');
     
     const emailOptions = formatFormEmail(data);
