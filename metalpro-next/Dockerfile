@@ -2,9 +2,9 @@ FROM node:24-slim AS builder
 
 WORKDIR /workspace
 
-# Установка всех зависимостей (включая devDependencies для сборки)
-COPY package*.json ./
-RUN npm ci
+# Копируем .npmrc для отключения аудита/сбора средств
+COPY .npmrc package*.json ./
+RUN npm ci --no-audit --no-fund
 
 # Копирование исходного кода
 COPY . .
@@ -17,9 +17,9 @@ FROM node:24-slim
 
 WORKDIR /workspace
 
-# Установка только production зависимостей
-COPY package*.json ./
-RUN npm ci --only=production
+# Копируем .npmrc и устанавливаем только production зависимости
+COPY .npmrc package*.json ./
+RUN npm ci --omit=dev --no-audit --no-fund
 
 # Копирование собранного приложения из builder
 COPY --from=builder /workspace/.next ./.next
