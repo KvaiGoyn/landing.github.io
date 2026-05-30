@@ -5,7 +5,7 @@ Email: info@metalpro.ru
 Город: Москва, Россия
 
 /* ТЕХНОЛОГИИ */
-Frontend: Next.js 14, React, TypeScript, Tailwind CSS
+Frontend: Next.js 16, React 19, TypeScript, Tailwind CSS 4
 Backend: Node.js, API Routes
 Хостинг: Vercel
 Сборка: Turbopack
