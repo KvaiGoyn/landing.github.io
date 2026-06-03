@@ -22,5 +22,41 @@
       <image:loc>https://stylmaster.ru/images/case_build.jpeg</image:loc>
       <image:title>Сварочные работы</image:title>
     </image:image>
+    <image:image>
+      <image:loc>https://stylmaster.ru/images/123.jpg</image:loc>
+      <image:title>Производство металлоизделий Стиль Мастер</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://stylmaster.ru/images/9153.jpg</image:loc>
+      <image:title>Цех металлообработки Стиль Мастер</image:title>
+    </image:image>
+  </url>
+  
+  <!-- Юридические страницы -->
+  <url>
+    <loc>https://stylmaster.ru/legal/privacy-policy</loc>
+    <lastmod>2025-12-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://stylmaster.ru/legal/terms-of-service</loc>
+    <lastmod>2025-12-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://stylmaster.ru/legal/cookie-policy</loc>
+    <lastmod>2025-12-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  
+  <!-- Страница благодарности -->
+  <url>
+    <loc>https://stylmaster.ru/thank-you</loc>
+    <lastmod>2025-12-18</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.1</priority>
   </url>
 </urlset>

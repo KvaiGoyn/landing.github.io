@@ -33,7 +33,7 @@ const Partners = () => {
                   <div className="relative w-12 h-12 rounded-lg overflow-hidden">
                     <Image
                       src={partner.image.replace('/landing.github.io', '')}
-                      alt={partner.name}
+                      alt={`Логотип ${partner.name} — партнёр компании Стиль Мастер по металлообработке`}
                       fill
                       className="object-contain"
                       sizes="48px"

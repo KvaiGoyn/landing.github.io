@@ -157,7 +157,13 @@ const Portfolio = () => {
           {filteredItems.map((item) => (
             <div key={item.id} className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <div className="aspect-[4/3] relative overflow-hidden">
-                <Image src={item.image} alt={item.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                <Image
+                  src={item.image}
+                  alt={item.title + ' — пример работ по металлообработке от компании Стиль Мастер'}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
                 <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
                   {item.tags.map((tag, index) => (
                     <span key={index} className="px-2.5 py-1 bg-white/90 backdrop-blur-sm text-xs font-medium rounded-full text-gray-700">
@@ -222,7 +228,7 @@ const Portfolio = () => {
             <div className="aspect-video rounded-2xl overflow-hidden relative">
               <Image
                 src="/images/case_main.jpeg"
-                alt="Готовые металлоконструкции"
+                alt="Готовые металлоконструкции после порошковой покраски — пример работы Стиль Мастер"
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, 50vw"

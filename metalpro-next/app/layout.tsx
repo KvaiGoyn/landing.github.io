@@ -11,9 +11,12 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://stylmaster.ru'),
   title: "Стиль Мастер — Производство металлоизделий под ключ | Сварка, покраска, монтаж",
   description: "Профессиональное производство металлоизделий под ключ: сварочные работы, порошковая покраска, антивандальные решётки, перила, ворота, навесы. Гарантия до 20 лет. Работаем по Москве и области.",
-  keywords: "сварка, порошковая покраска, решётки, металлоконструкции, антивандальные решётки, перила, ворота, навесы, производство металлоизделий, металлообработка",
+  keywords: "сварка, порошковая покраска, решётки, металлоконструкции, антивандальные решётки, перила, ворота, навесы, производство металлоизделий, металлообработка, сварочные работы цена, покраска металла, заказать решётки на окна",
   authors: [{ name: "Стиль Мастер" }],
   robots: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
+  verification: {
+    yandex: "e3ad7eec044ee846",
+  },
   openGraph: {
     title: "Стиль Мастер — Производство металлоизделий под ключ",
     description: "Сварка, покраска, монтаж — всё в одном месте. Гарантия до 20 лет. Работаем по Москве и области.",
@@ -133,16 +136,181 @@ export default function RootLayout({
                   "@type": "Service",
                   "name": "Сварочные работы",
                   "serviceType": "Сварка металлоконструкций",
+                  "description": "Изготовление металлоконструкций, каркасов, ворот, заборов, навесов, лестниц, перил. Работаем с чёрным металлом, нержавеющей сталью и алюминием.",
                   "provider": {
                     "@id": "https://stylmaster.ru/#organization"
+                  },
+                  "offers": {
+                    "@type": "Offer",
+                    "price": "500",
+                    "priceCurrency": "RUB",
+                    "priceSpecification": {
+                      "@type": "UnitPriceSpecification",
+                      "unitText": "погонный метр шва"
+                    }
                   }
                 },
                 {
                   "@type": "Service",
                   "name": "Порошковая покраска",
                   "serviceType": "Покраска металлоизделий",
+                  "description": "Профессиональное покрытие в камерах полимеризации. Палитра RAL, устойчивость к УФ-лучам и механическим повреждениям.",
                   "provider": {
                     "@id": "https://stylmaster.ru/#organization"
+                  },
+                  "offers": {
+                    "@type": "Offer",
+                    "price": "350",
+                    "priceCurrency": "RUB",
+                    "priceSpecification": {
+                      "@type": "UnitPriceSpecification",
+                      "unitText": "м² поверхности"
+                    }
+                  }
+                },
+                {
+                  "@type": "Service",
+                  "name": "Антивандальные решётки",
+                  "serviceType": "Изготовление решёток",
+                  "description": "Готовые изделия с усиленной конструкцией. Кованые и сварные решётки, рольставни — надёжная защита вашего имущества.",
+                  "provider": {
+                    "@id": "https://stylmaster.ru/#organization"
+                  },
+                  "offers": {
+                    "@type": "Offer",
+                    "price": "3500",
+                    "priceCurrency": "RUB",
+                    "priceSpecification": {
+                      "@type": "UnitPriceSpecification",
+                      "unitText": "м² изделия"
+                    }
+                  }
+                },
+                {
+                  "@type": "BreadcrumbList",
+                  "@id": "https://stylmaster.ru/#breadcrumb",
+                  "itemListElement": [
+                    {
+                      "@type": "ListItem",
+                      "position": 1,
+                      "name": "Главная",
+                      "item": "https://stylmaster.ru/"
+                    }
+                  ]
+                },
+                {
+                  "@type": "FAQPage",
+                  "@id": "https://stylmaster.ru/#faq",
+                  "mainEntity": [
+                    {
+                      "@type": "Question",
+                      "name": "Сколько времени занимает изготовление?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "От 3 дней для стандартных изделий. Срок зависит от сложности и объёма работ."
+                      }
+                    },
+                    {
+                      "@type": "Question",
+                      "name": "Есть ли гарантия на работы?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Да, гарантия 1 год на порошковое покрытие и 1 год на сварные швы."
+                      }
+                    },
+                    {
+                      "@type": "Question",
+                      "name": "Работаете ли вы с регионами?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Да, доставляем изделия по всей России. Монтаж возможен в крупных городах."
+                      }
+                    },
+                    {
+                      "@type": "Question",
+                      "name": "Сколько стоят сварочные работы?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Сварочные работы — от 500 ₽ за погонный метр шва. Точная смета после замера."
+                      }
+                    },
+                    {
+                      "@type": "Question",
+                      "name": "Как заказать бесплатный замер?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Оставьте заявку на сайте или позвоните по телефону +7 (912) 222-02-41. Мы выезжаем на бесплатный замер и консультацию."
+                      }
+                    }
+                  ]
+                },
+                {
+                  "@type": "Product",
+                  "@id": "https://stylmaster.ru/#product-welding",
+                  "name": "Сварочные работы",
+                  "description": "Профессиональная сварка металлоконструкций. Работа с любыми металлами, выезд на объект, сварка аргоном и полуавтоматом.",
+                  "brand": {
+                    "@type": "Brand",
+                    "name": "Стиль Мастер"
+                  },
+                  "offers": {
+                    "@type": "AggregateOffer",
+                    "priceCurrency": "RUB",
+                    "lowPrice": "500",
+                    "highPrice": "5000",
+                    "offerCount": "4"
+                  },
+                  "aggregateRating": {
+                    "@type": "AggregateRating",
+                    "ratingValue": "4.9",
+                    "reviewCount": "500",
+                    "bestRating": "5"
+                  }
+                },
+                {
+                  "@type": "Product",
+                  "@id": "https://stylmaster.ru/#product-painting",
+                  "name": "Порошковая покраска",
+                  "description": "Профессиональное покрытие в камерах полимеризации. Палитра RAL, подготовка поверхности, гарантия на покрытие.",
+                  "brand": {
+                    "@type": "Brand",
+                    "name": "Стиль Мастер"
+                  },
+                  "offers": {
+                    "@type": "AggregateOffer",
+                    "priceCurrency": "RUB",
+                    "lowPrice": "350",
+                    "highPrice": "3000",
+                    "offerCount": "4"
+                  },
+                  "aggregateRating": {
+                    "@type": "AggregateRating",
+                    "ratingValue": "4.9",
+                    "reviewCount": "500",
+                    "bestRating": "5"
+                  }
+                },
+                {
+                  "@type": "Product",
+                  "@id": "https://stylmaster.ru/#product-grates",
+                  "name": "Антивандальные решётки",
+                  "description": "Усиленные решётки на окна с антивандальным покрытием. Проектирование, изготовление, покраска, монтаж под ключ.",
+                  "brand": {
+                    "@type": "Brand",
+                    "name": "Стиль Мастер"
+                  },
+                  "offers": {
+                    "@type": "AggregateOffer",
+                    "priceCurrency": "RUB",
+                    "lowPrice": "3500",
+                    "highPrice": "15000",
+                    "offerCount": "4"
+                  },
+                  "aggregateRating": {
+                    "@type": "AggregateRating",
+                    "ratingValue": "4.9",
+                    "reviewCount": "500",
+                    "bestRating": "5"
                   }
                 }
               ]
