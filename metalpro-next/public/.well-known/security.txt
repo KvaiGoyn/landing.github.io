@@ -1,5 +1,5 @@
-# security.txt для сайта МеталлПро
-Contact: mailto:security@metalpro.ru
+# security.txt для сайта Стиль Мастер
+Contact: mailto:security@stylmaster.ru
 Expires: 2026-12-31T23:59:59.000Z
 Preferred-Languages: ru, en
-Canonical: https://metalpro.ru/.well-known/security.txt
+Canonical: https://stylmaster.ru/.well-known/security.txt

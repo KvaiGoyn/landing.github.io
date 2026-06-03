@@ -183,7 +183,7 @@ npm run deploy
 ### Настройки окружения
 Создайте `.env.local` для production:
 ```env
-NEXT_PUBLIC_API_URL=https://api.metalpro.ru
+NEXT_PUBLIC_API_URL=https://api.stylmaster.ru
 ```
 
 ## 📚 Документация

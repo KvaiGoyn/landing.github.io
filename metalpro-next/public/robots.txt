@@ -1,4 +1,4 @@
-# Robots.txt для сайта МеталлПро
+# Robots.txt для сайта Стиль Мастер
 User-agent: *
 Allow: /
 Disallow: /api/
@@ -12,9 +12,9 @@ Allow: /sitemap.xml
 Crawl-delay: 2
 
 # Sitemap
-Sitemap: https://metalpro.ru/sitemap.xml
+Sitemap: https://stylmaster.ru/sitemap.xml
 
 # Host (основное зеркало)
-Host: https://metalpro.ru
+Host: https://stylmaster.ru
 
 # Комментарий: сайт одностраничный, все страницы доступны для индексации

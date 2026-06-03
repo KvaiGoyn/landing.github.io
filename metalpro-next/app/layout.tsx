@@ -8,7 +8,7 @@ import ModalManager from "@/app/components/ModalManager";
 const inter = Inter({ subsets: ["latin", "cyrillic"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://metalpro.ru'),
+  metadataBase: new URL('https://stylmaster.ru'),
   title: "Стиль Мастер — Производство металлоизделий под ключ | Сварка, покраска, монтаж",
   description: "Профессиональное производство металлоизделий под ключ: сварочные работы, порошковая покраска, антивандальные решётки, перила, ворота, навесы. Гарантия до 20 лет. Работаем по Москве и области.",
   keywords: "сварка, порошковая покраска, решётки, металлоконструкции, антивандальные решётки, перила, ворота, навесы, производство металлоизделий, металлообработка",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     title: "Стиль Мастер — Производство металлоизделий под ключ",
     description: "Сварка, покраска, монтаж — всё в одном месте. Гарантия до 20 лет. Работаем по Москве и области.",
     type: "website",
-    url: "https://metalpro.ru",
+    url: "https://stylmaster.ru",
     siteName: "Стиль Мастер",
     images: [
       {
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     creator: "@stil_master",
   },
   alternates: {
-    canonical: "https://metalpro.ru",
+    canonical: "https://stylmaster.ru",
   },
 };
 
@@ -98,12 +98,12 @@ export default function RootLayout({
               "@graph": [
                 {
                   "@type": "LocalBusiness",
-                  "@id": "https://metalpro.ru/#organization",
+                  "@id": "https://stylmaster.ru/#organization",
                   "name": "Стиль Мастер",
                   "description": "Профессиональное производство металлоизделий под ключ: сварочные работы, порошковая покраска, антивандальные решётки, перила, ворота, навесы.",
-                  "url": "https://metalpro.ru",
-                  "logo": "https://metalpro.ru/logo.svg",
-                  "image": "https://metalpro.ru/images/case_main.jpeg",
+                  "url": "https://stylmaster.ru",
+                  "logo": "https://stylmaster.ru/logo.svg",
+                  "image": "https://stylmaster.ru/images/case_main.jpeg",
                   "address": {
                     "@type": "PostalAddress",
                     "addressLocality": "Москва",
@@ -121,12 +121,12 @@ export default function RootLayout({
                 },
                 {
                   "@type": "WebSite",
-                  "@id": "https://metalpro.ru/#website",
-                  "url": "https://metalpro.ru",
+                  "@id": "https://stylmaster.ru/#website",
+                  "url": "https://stylmaster.ru",
                   "name": "Стиль Мастер",
                   "description": "Производство металлоизделий под ключ",
                   "publisher": {
-                    "@id": "https://metalpro.ru/#organization"
+                    "@id": "https://stylmaster.ru/#organization"
                   }
                 },
                 {
@@ -134,7 +134,7 @@ export default function RootLayout({
                   "name": "Сварочные работы",
                   "serviceType": "Сварка металлоконструкций",
                   "provider": {
-                    "@id": "https://metalpro.ru/#organization"
+                    "@id": "https://stylmaster.ru/#organization"
                   }
                 },
                 {
@@ -142,7 +142,7 @@ export default function RootLayout({
                   "name": "Порошковая покраска",
                   "serviceType": "Покраска металлоизделий",
                   "provider": {
-                    "@id": "https://metalpro.ru/#organization"
+                    "@id": "https://stylmaster.ru/#organization"
                   }
                 }
               ]

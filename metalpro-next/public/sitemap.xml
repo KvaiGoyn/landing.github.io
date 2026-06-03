@@ -3,23 +3,23 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
-    <loc>https://metalpro.ru/</loc>
+    <loc>https://stylmaster.ru/</loc>
     <lastmod>2025-12-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://metalpro.ru/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://metalpro.ru/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://stylmaster.ru/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stylmaster.ru/" />
     <image:image>
-      <image:loc>https://metalpro.ru/images/case_main.jpeg</image:loc>
-      <image:title>Пример работ МеталлПро — металлоконструкции</image:title>
+      <image:loc>https://stylmaster.ru/images/case_main.jpeg</image:loc>
+      <image:title>Пример работ Стиль Мастер — металлоконструкции</image:title>
       <image:caption>Производство металлоизделий под ключ</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://metalpro.ru/images/case_paint_after.jpg</image:loc>
+      <image:loc>https://stylmaster.ru/images/case_paint_after.jpg</image:loc>
       <image:title>Порошковая покраска металлоизделий</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://metalpro.ru/images/case_build.jpeg</image:loc>
+      <image:loc>https://stylmaster.ru/images/case_build.jpeg</image:loc>
       <image:title>Сварочные работы</image:title>
     </image:image>
   </url>
