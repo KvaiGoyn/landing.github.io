@@ -242,7 +242,7 @@ const Portfolio = () => {
               <h3 className="text-2xl lg:text-3xl font-bold text-white mb-4">Металлоконструкции под заказ</h3>
               <p className="text-gray-300 mb-6 leading-relaxed">
                 Заказчик обратился по ТЗ на изготовление металлоконструкций с порошковой покраской.
-                Полный цикл: изготовление, пескоструй, покраска (травяной зелёный RAL 6005), упаковка и отгрузка.
+                Полный цикл: изготовление, пескоструй, покраска, упаковка и отгрузка.
               </p>
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div><div className="text-2xl font-bold text-orange-400">1 партия</div><div className="text-xs text-gray-400">металлоконструкций</div></div>
