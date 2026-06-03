@@ -179,7 +179,10 @@ const Contact = () => {
               </Accordion>
             </div>
             
-            <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-6 text-white">
+            <a
+              href="tel:+79122220241"
+              className="block bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-6 text-white hover:from-orange-600 hover:to-orange-700 transition-all duration-300"
+            >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
                   <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -191,7 +194,7 @@ const Contact = () => {
                   <div className="text-white/90">Получите бесплатную консультацию</div>
                 </div>
               </div>
-            </div>
+            </a>
           </div>
         </div>
       </div>
