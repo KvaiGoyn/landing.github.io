@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, Children, cloneElement } from 'react';
+import React, { useState, useEffect, Children, cloneElement, useCallback } from 'react';
 import { AccordionProps, AccordionItemProps } from './Accordion.types';
 import { accordionStyles } from './Accordion.styles';
-import { useAccordion } from '@/app/hooks/useAccordion';
 
 /**
  * Компонент аккордеона для раскрывающихся секций
@@ -16,16 +15,36 @@ export const Accordion: React.FC<AccordionProps> = ({
   onOpenChange,
 }) => {
   const items = Children.toArray(children);
-  const {
-    openIndexes,
-    toggleItem,
-    openItem,
-    closeItem,
-    isItemOpen,
-  } = useAccordion({
-    multiple,
-    initialOpenIndex: defaultOpenIndex,
+
+  const [openIndexes, setOpenIndexes] = useState<number[]>(() => {
+    if (defaultOpenIndex === null) return [];
+    const initial = Array.isArray(defaultOpenIndex) ? defaultOpenIndex : [defaultOpenIndex];
+    return multiple ? initial : initial.slice(0, 1);
   });
+
+  const toggleItem = useCallback((index: number) => {
+    setOpenIndexes(prev => {
+      if (prev.includes(index)) {
+        return prev.filter(i => i !== index);
+      }
+      return multiple ? [...prev, index] : [index];
+    });
+  }, [multiple]);
+
+  const openItem = useCallback((index: number) => {
+    setOpenIndexes(prev => {
+      if (prev.includes(index)) return prev;
+      return multiple ? [...prev, index] : [index];
+    });
+  }, [multiple]);
+
+  const closeItem = useCallback((index: number) => {
+    setOpenIndexes(prev => prev.filter(i => i !== index));
+  }, []);
+
+  const isItemOpen = useCallback((index: number) => {
+    return openIndexes.includes(index);
+  }, [openIndexes]);
 
   // Вызываем callback при изменении открытых индексов
   useEffect(() => {

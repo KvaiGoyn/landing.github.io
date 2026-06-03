@@ -4,7 +4,7 @@
 export const carouselStyles = {
   container: 'relative overflow-hidden',
   slidesContainer: 'flex transition-transform duration-500 ease-in-out',
-  slide: 'flex-shrink-0',
+  slide: 'flex-shrink-0 overflow-hidden',
   navigationButton:
     'absolute top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white border border-gray-200 shadow-lg flex items-center justify-center text-gray-600 hover:text-orange-500 hover:border-orange-300 transition-colors z-10',
   navigationButtonPrev: 'left-4',

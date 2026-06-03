@@ -2,14 +2,12 @@
 
 import React, { useEffect } from 'react';
 import { useMobileMenu } from '@/app/context/UIContext';
-import { useNavigationScroll } from '@/app/hooks/useScrollTo';
 import { SECTION_IDS } from '@/app/constants/sections';
 import { Button } from '@/app/components/ui/Button/Button';
 import { useModal } from '@/app/context/ModalContext';
 
 const MobileMenu = () => {
   const { isMobileMenuOpen, closeMobileMenu } = useMobileMenu();
-  const { handleNavClick } = useNavigationScroll();
   const { openModal } = useModal();
 
   // Закрытие меню при нажатии Escape
@@ -24,7 +22,11 @@ const MobileMenu = () => {
   }, [isMobileMenuOpen, closeMobileMenu]);
 
   const handleNavLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
-    handleNavClick(e, sectionId);
+    e.preventDefault();
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
     closeMobileMenu();
   };
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Carousel, CarouselSlide } from '@/app/components/ui/Carousel';
 
 interface Testimonial {
@@ -37,8 +37,8 @@ const TestimonialCard = ({
         bg-white rounded-2xl border transition-all duration-500 p-6 h-full flex flex-col
         ${
           isActive
-            ? 'border-orange-200 shadow-xl shadow-orange-100/50 scale-105 z-10'
-            : 'border-gray-100 opacity-60 scale-95'
+            ? 'border-orange-200 shadow-xl shadow-orange-100/50 z-10'
+            : 'border-gray-100 opacity-60'
         }
       `}
     >
@@ -57,7 +57,7 @@ const TestimonialCard = ({
         ))}
       </div>
       <p className="text-gray-700 leading-relaxed mb-6 text-sm flex-grow">
-        “{t.text}”
+        &ldquo;{t.text}&rdquo;
       </p>
       <div className="flex items-center gap-3">
         {t.avatar ? (
@@ -105,7 +105,6 @@ const TestimonialCard = ({
 const Testimonials = () => {
   const [desktopFirstIndex, setDesktopFirstIndex] = useState(0);
   const [mobileIndex, setMobileIndex] = useState(0);
-  const [isAutoPlayActive, setIsAutoPlayActive] = useState(true);
 
   const testimonials = [
     { id: 1, name: 'Александр Петров', role: 'Частный заказчик', avatar: '', text: 'Заказывал решётки на окна и ворота для дачи. Сделали всё за неделю! Качество сварки отличное, покраска ровная. Ребята приехали на замер в тот же день. Рекомендую!', rating: 5 },
@@ -124,29 +123,6 @@ const Testimonials = () => {
 
   const paddedTestimonials = [{ isEmpty: true }, ...testimonials, { isEmpty: true }];
   const centerIndex = desktopFirstIndex + 1;
-
-  const desktopCarouselRef = useRef<HTMLDivElement>(null);
-  const mobileCarouselRef = useRef<HTMLDivElement>(null);
-
-  const [desktopKey, setDesktopKey] = useState(0);
-  const [mobileKey, setMobileKey] = useState(0);
-
-  const handleDesktopMouseEnter = () => {
-    setIsAutoPlayActive(false);
-    setDesktopKey(prev => prev + 1);
-  };
-  const handleDesktopMouseLeave = () => {
-    setIsAutoPlayActive(true);
-    setDesktopKey(prev => prev + 1);
-  };
-  const handleMobileMouseEnter = () => {
-    setIsAutoPlayActive(false);
-    setMobileKey(prev => prev + 1);
-  };
-  const handleMobileMouseLeave = () => {
-    setIsAutoPlayActive(true);
-    setMobileKey(prev => prev + 1);
-  };
 
   return (
     <section className="py-20 lg:py-28 bg-white relative overflow-hidden">
@@ -169,17 +145,11 @@ const Testimonials = () => {
           </p>
         </div>
 
-        {/* Десктопная карусель (без индикаторов) */}
-        <div
-          ref={desktopCarouselRef}
-          onMouseEnter={handleDesktopMouseEnter}
-          onMouseLeave={handleDesktopMouseLeave}
-          className="hidden lg:block"
-        >
+        {/* Десктопная карусель */}
+        <div className="hidden lg:block">
           <Carousel
-            key={desktopKey}
             visibleSlides={3}
-            autoPlayInterval={isAutoPlayActive ? 4000 : 0}
+            autoPlayInterval={4000}
             loop={true}
             showNavigation={true}
             showIndicators={false}
@@ -197,19 +167,13 @@ const Testimonials = () => {
           </Carousel>
         </div>
 
-        {/* Мобильная карусель (без индикаторов) */}
-        <div
-          ref={mobileCarouselRef}
-          onMouseEnter={handleMobileMouseEnter}
-          onMouseLeave={handleMobileMouseLeave}
-          className="lg:hidden"
-        >
+        {/* Мобильная карусель */}
+        <div className="lg:hidden">
           <Carousel
-            key={mobileKey}
             visibleSlides={1}
-            autoPlayInterval={isAutoPlayActive ? 4000 : 0}
+            autoPlayInterval={4000}
             loop={true}
-            showNavigation={true}
+            showNavigation={false}
             showIndicators={false}
             initialIndex={0}
             onSlideChange={setMobileIndex}

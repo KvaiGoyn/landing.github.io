@@ -1,14 +1,37 @@
 'use client';
 
-import React, { useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
-import { usePortfolioFilter as usePortfolioFilterHook } from '@/app/hooks/usePortfolioFilter';
-import { usePortfolioFilter as usePortfolioFilterContext, PortfolioFilter } from '@/app/context/FilterContext';
 import { useModal } from '@/app/context/ModalContext';
 import { Button } from '@/app/components/ui/Button/Button';
 
+interface Category {
+  id: string;
+  label: string;
+}
+
+interface PortfolioItem {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+  tags: string[];
+  category: string;
+  hasRealPhoto?: boolean;
+}
+
+const categories: Category[] = [
+  { id: 'all', label: 'Все работы' },
+  { id: 'Решётки', label: 'Решётки' },
+  { id: 'Покраска', label: 'Покраска' },
+  { id: 'Металлоконструкции', label: 'Металлоконструкции' },
+];
+
 const Portfolio = () => {
-  const portfolioItems = useMemo(
+  const [activeCategory, setActiveCategory] = useState('all');
+  const { openModal } = useModal();
+
+  const portfolioItems: PortfolioItem[] = useMemo(
     () => [
       {
         id: 1,
@@ -37,10 +60,10 @@ const Portfolio = () => {
       },
       {
         id: 4,
-        title: "Транспортная система для печи",  // ← новое название
+        title: "Транспортная система для печи",
         description: "Рольганговая транспортная система для подачи заготовок в промышленную печь. Полный цикл: проектирование, сварка, порошковая покраска, монтаж и пусконаладка.",
         image: "/images/metal.jpg",
-        tags: ["Сварка", "Покраска", "Монтаж"],  // ← добавлен монтаж
+        tags: ["Сварка", "Покраска", "Монтаж"],
         category: "Металлоконструкции"
       },
       {
@@ -56,7 +79,7 @@ const Portfolio = () => {
         title: "Покраска дисков",
         description: "Отчистка накладок на диски машины с последующей порошковой покраской",
         image: "/images/disk.jpeg",
-        tags: ["Покраска"],  // ← убрал сварку (диски только красят)
+        tags: ["Покраска"],
         category: "Покраска",
       },
     ],
@@ -72,35 +95,16 @@ const Portfolio = () => {
     '/images/case_paint_after.jpg',
   ];
 
-  const {
-    filteredItems,
-    activeCategory,
-    setActiveCategory,
-    availableCategories,
-    resetFilter,
-    isCategoryActive,
-  } = usePortfolioFilterHook({
-    items: portfolioItems,
-    initialCategory: 'all',
-    getCategory: (item) => item.category,
-    categories: [
-      { id: 'all', label: 'Все работы' },
-      { id: 'Решётки', label: 'Решётки' },
-      { id: 'Покраска', label: 'Покраска' },
-      { id: 'Металлоконструкции', label: 'Металлоконструкции' },
-    ],
-  });
+  const filteredItems = useMemo(
+    () => activeCategory === 'all'
+      ? portfolioItems
+      : portfolioItems.filter(item => item.category === activeCategory),
+    [activeCategory, portfolioItems]
+  );
 
-  const { setFilter } = usePortfolioFilterContext();
-  const { openModal } = useModal();
-
-  useEffect(() => {
-    if (activeCategory === 'all') {
-      setFilter('all');
-    } else {
-      setFilter(activeCategory as PortfolioFilter);
-    }
-  }, [activeCategory, setFilter]);
+  const handleCategoryClick = (categoryId: string) => {
+    setActiveCategory(categoryId);
+  };
 
   const handleProjectDetailsClick = () => {
     openModal('project-details', {
@@ -136,15 +140,11 @@ const Portfolio = () => {
         </div>
 
         <div className="flex flex-wrap justify-center gap-2 mb-12">
-          {availableCategories.map((category) => (
+          {categories.map((category) => (
             <Button
               key={category.id}
-              onClick={() =>
-                category.id === 'all'
-                  ? resetFilter()
-                  : setActiveCategory(category.id)
-              }
-              variant={isCategoryActive(category.id) ? 'primary' : 'outline'}
+              onClick={() => handleCategoryClick(category.id)}
+              variant={activeCategory === category.id ? 'primary' : 'outline'}
               size="sm"
               className="rounded-full !ring-0 !outline-none"
             >
@@ -184,7 +184,7 @@ const Portfolio = () => {
                       {item.id === 1 ? "Отсутствие защиты" :
                        item.id === 2 ? "Пустой проем" :
                        item.id === 3 ? "Ржавчина на раме" :
-                       item.id === 4 ? "Ручная подача заготовок" :  // ← изменено
+                       item.id === 4 ? "Ручная подача заготовок" :
                        item.id === 5 ? "Эскиз и замеры" : "Обычные диски"}
                     </div>
                   </div>
@@ -194,7 +194,7 @@ const Portfolio = () => {
                       {item.id === 1 ? "Изготовление решетки" :
                        item.id === 2 ? "Изготовление и монтаж" :
                        item.id === 3 ? "Очистка и покраска" :
-                       item.id === 4 ? "Проектирование, сварка, покраска, монтаж" :  // ← изменено
+                       item.id === 4 ? "Проектирование, сварка, покраска, монтаж" :
                        item.id === 5 ? "Изготовление и покраска" : "Очистка и покраска"}
                     </div>
                   </div>
@@ -204,7 +204,7 @@ const Portfolio = () => {
                       {item.id === 1 ? "Монтаж в офис Мегафон" :
                        item.id === 2 ? "Готовый элемент здания" :
                        item.id === 3 ? "Красивая рама" :
-                       item.id === 4 ? "Автоматизированная подача в печь" :  // ← изменено
+                       item.id === 4 ? "Автоматизированная подача в печь" :
                        item.id === 5 ? "Готовое подстолье" : "Красивые диски"}
                     </div>
                   </div>
@@ -221,7 +221,7 @@ const Portfolio = () => {
           ))}
         </div>
 
-        {/* Кейс-стади (без изменений) */}
+        {/* Кейс-стади */}
         <div className="mt-16 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl p-8 lg:p-12 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl"></div>
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 relative z-10">

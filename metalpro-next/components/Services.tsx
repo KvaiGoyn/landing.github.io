@@ -1,21 +1,14 @@
 'use client';
 
 import React from 'react';
-import { useScrollTo } from '@/app/hooks/useScrollTo';
 import { useModal } from '@/app/context/ModalContext';
-import { SECTION_IDS } from '@/app/constants/sections';
 import { Button } from '@/app/components/ui/Button/Button';
 
 const Services = () => {
-  const { scrollToSection } = useScrollTo();
   const { openModal } = useModal();
 
   const handleConsultationClick = () => {
-    // Согласно требованиям: скролл к секции contact или открытие формы консультации
-    // Выбираем открытие модального окна консультации
     openModal('consultation');
-    // Альтернативно можно скроллить к контактам:
-    // scrollToSection(SECTION_IDS.CONTACTS, { behavior: 'smooth' });
   };
 
   return (

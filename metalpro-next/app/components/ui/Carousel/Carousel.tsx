@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { CarouselProps } from './Carousel.types';
 import { carouselStyles } from './Carousel.styles';
-import { useCarousel } from '@/app/hooks/useCarousel';
 
 /**
  * Компонент карусели для отображения слайдов с навигацией
@@ -15,6 +14,7 @@ export const Carousel: React.FC<CarouselProps> = ({
   loop = true,
   showNavigation = true,
   showIndicators = true,
+  hideNavigationOnMobile = false,
   className = '',
   onSlideChange,
   initialIndex = 0,
@@ -22,21 +22,75 @@ export const Carousel: React.FC<CarouselProps> = ({
   const slides = React.Children.toArray(children);
   const totalSlides = slides.length;
 
-  const {
-    currentIndex,
-    next,
-    prev,
-    goTo,
-    setAutoPlay,
-    isAutoPlaying,
-    totalSlides: hookTotalSlides,
-  } = useCarousel({
-    itemCount: totalSlides,
-    initialIndex,
-    autoPlayInterval,
-    loop,
-    visibleSlides,
-  });
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(autoPlayInterval > 0);
+  const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  const maxIndex = Math.max(0, totalSlides - visibleSlides);
+
+  const next = useCallback(() => {
+    setCurrentIndex(prev => {
+      if (prev >= maxIndex) {
+        return loop ? 0 : prev;
+      }
+      return prev + 1;
+    });
+  }, [maxIndex, loop]);
+
+  const prev = useCallback(() => {
+    setCurrentIndex(prev => {
+      if (prev <= 0) {
+        return loop ? maxIndex : prev;
+      }
+      return prev - 1;
+    });
+  }, [maxIndex, loop]);
+
+  const goTo = useCallback((index: number) => {
+    setCurrentIndex(Math.min(Math.max(0, index), maxIndex));
+  }, [maxIndex]);
+
+  const setAutoPlay = useCallback((playing: boolean) => {
+    setIsAutoPlaying(playing);
+  }, []);
+
+  // Touch handlers for swipe
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    const diff = touchStartX.current - touchEndX.current;
+    const minSwipeDistance = 50;
+
+    if (Math.abs(diff) > minSwipeDistance) {
+      if (diff > 0) {
+        next();
+      } else {
+        prev();
+      }
+    }
+  }, [next, prev]);
+
+  // Автовоспроизведение
+  useEffect(() => {
+    if (autoPlayInterval > 0 && isAutoPlaying) {
+      autoPlayRef.current = setInterval(next, autoPlayInterval);
+    }
+    return () => {
+      if (autoPlayRef.current) {
+        clearInterval(autoPlayRef.current);
+        autoPlayRef.current = null;
+      }
+    };
+  }, [autoPlayInterval, isAutoPlaying, next]);
 
   // Вызываем callback при изменении слайда
   useEffect(() => {
@@ -61,9 +115,13 @@ export const Carousel: React.FC<CarouselProps> = ({
 
   return (
     <div
+      ref={containerRef}
       className={`${carouselStyles.container} ${className}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Контейнер слайдов */}
       <div
@@ -85,7 +143,7 @@ export const Carousel: React.FC<CarouselProps> = ({
 
       {/* Кнопки навигации */}
       {showNavigation && totalSlides > visibleSlides && (
-        <>
+        <div className={hideNavigationOnMobile ? 'hidden lg:block' : ''}>
           <button
             onClick={prev}
             className={`${carouselStyles.navigationButton} ${carouselStyles.navigationButtonPrev}`}
@@ -120,7 +178,7 @@ export const Carousel: React.FC<CarouselProps> = ({
               <path d="M5 12h14M12 5l7 7-7 7"></path>
             </svg>
           </button>
-        </>
+        </div>
       )}
 
       {/* Индикаторы (точки) */}
@@ -137,18 +195,6 @@ export const Carousel: React.FC<CarouselProps> = ({
               aria-current={currentIndex === index}
             />
           ))}
-        </div>
-      )}
-
-      {/* Индикатор автовоспроизведения (опционально) */}
-      {autoPlayInterval > 0 && (
-        <div className="absolute bottom-4 right-4 flex items-center gap-2 text-xs text-gray-500">
-          <div
-            className={`w-2 h-2 rounded-full ${
-              isAutoPlaying ? 'bg-green-500' : 'bg-gray-300'
-            }`}
-          />
-          <span>{isAutoPlaying ? 'Автопрокрутка' : 'Пауза'}</span>
         </div>
       )}
     </div>

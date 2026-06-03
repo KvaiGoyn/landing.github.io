@@ -1,21 +1,18 @@
 'use client';
 
 import React from 'react';
-import { useScrollTo } from '@/app/hooks/useScrollTo';
 import { useModal } from '@/app/context/ModalContext';
 import { SECTION_IDS } from '@/app/constants/sections';
 import { Button } from '@/app/components/ui/Button/Button';
 
 const Hero = () => {
-  const { scrollToSection } = useScrollTo();
   const { openModal } = useModal();
 
   const handlePortfolioClick = () => {
-    scrollToSection(SECTION_IDS.PORTFOLIO, { 
-      behavior: 'smooth',
-      block: 'start',
-      inline: 'nearest'
-    });
+    const el = document.getElementById(SECTION_IDS.PORTFOLIO);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   const handleCalculationClick = () => {

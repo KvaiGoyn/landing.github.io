@@ -19,13 +19,13 @@ const ContactForm: React.FC<ContactFormProps> = ({ compact = false }) => {
       )}
       
       <form
-        action="/api/formsubmit"
+        action="https://formsubmit.co/nezabut123@gmail.com"
         method="POST"
         className="space-y-4"
       >
-        {/* Отправка через наш прокси-маршрут для отправки в FormSubmit и Telegram */}
         <input type="hidden" name="_subject" value="Новая заявка с лендинга Стиль Мастер" />
-        <input type="hidden" name="_next" value="/thank-you" />
+        <input type="hidden" name="_next" value="https://stylmaster.ru/thank-you" />
+        <input type="hidden" name="_captcha" value="false" />
         
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">

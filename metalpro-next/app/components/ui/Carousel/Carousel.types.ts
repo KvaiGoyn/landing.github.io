@@ -13,6 +13,8 @@ export interface CarouselProps {
   showNavigation?: boolean;
   /** Показывать индикаторы (точки) */
   showIndicators?: boolean;
+  /** Скрыть кнопки навигации на мобильных устройствах */
+  hideNavigationOnMobile?: boolean;
   /** Дополнительные классы для контейнера */
   className?: string;
   /** Callback при изменении текущего слайда */

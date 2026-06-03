@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { useModal } from '@/app/context/ModalContext';
-import { useNavigationScroll } from '@/app/hooks/useScrollTo';
 import { useMobileMenu } from '@/app/context/UIContext';
 import { SECTION_IDS } from '@/app/constants/sections';
 import { Button } from '@/app/components/ui/Button/Button';
@@ -10,7 +9,6 @@ import MobileMenu from './MobileMenu';
 
 const Header = () => {
   const { openModal } = useModal();
-  const { handleNavClick } = useNavigationScroll();
   const { toggleMobileMenu, isMobileMenuOpen } = useMobileMenu();
 
   const handleCallbackClick = () => {
@@ -18,7 +16,11 @@ const Header = () => {
   };
 
   const handleNavLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
-    handleNavClick(e, sectionId);
+    e.preventDefault();
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   return (
