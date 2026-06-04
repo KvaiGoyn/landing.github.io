@@ -101,7 +101,7 @@ const Contact = () => {
                 <a href="tel:+79122220241" className="text-orange-600 hover:text-orange-700 font-medium">
                   +7 (912) 222-02-41
                 </a>
-                <p className="text-sm text-gray-500 mt-1">Бесплатно по России</p>
+                <p className="text-sm text-gray-500 mt-1">Дмитрий, отдел по раздвижным антивандальным решеткам</p>
               </div>
               
               <div className="bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-shadow">

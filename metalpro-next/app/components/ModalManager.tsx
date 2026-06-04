@@ -87,13 +87,11 @@ const ModalManager: React.FC = () => {
           Оставьте ваш номер телефона, и мы свяжемся с вами в ближайшее время
         </p>
         <form
-          action="https://formsubmit.co/nezabut123@gmail.com"
+          action="/api/send"
           method="POST"
           className="space-y-4"
         >
           <input type="hidden" name="_subject" value={`Новая заявка: ${activeModal}`} />
-          <input type="hidden" name="_captcha" value="false" />
-          <input type="hidden" name="_next" value="https://stylmaster.ru/thank-you" />
           <input type="hidden" name="formType" value={activeModal} />
 
           <input
@@ -110,6 +108,24 @@ const ModalManager: React.FC = () => {
             required
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all text-sm"
           />
+
+          <div className="flex items-start gap-3">
+            <input
+              type="checkbox"
+              id="agree-modal"
+              name="agree"
+              value="yes"
+              required
+              className="w-4 h-4 text-orange-600 rounded focus:ring-orange-500 mt-0.5"
+            />
+            <label htmlFor="agree-modal" className="text-xs text-gray-500">
+              Согласен на{' '}
+              <a href="/legal/privacy-policy" target="_blank" className="text-orange-600 hover:text-orange-700 underline">
+                обработку персональных данных
+              </a>
+            </label>
+          </div>
+
           <button
             type="submit"
             className="w-full py-3 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors text-sm"

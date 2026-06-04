@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import { AppProviders } from "@/app/context/AppProviders";
 import ModalManager from "@/app/components/ModalManager";
+import CookieBanner from "@/app/components/CookieBanner";
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] });
 
@@ -349,11 +350,18 @@ export default function RootLayout({
                     >
                       Политика использования cookie
                     </a>
+                    <a
+                      href="/legal/company-details"
+                      className="hover:text-white transition-colors"
+                    >
+                      Реквизиты
+                    </a>
                   </div>
                 </div>
               </div>
             </div>
           </footer>
+          <CookieBanner />
         </AppProviders>
       </body>
     </html>
