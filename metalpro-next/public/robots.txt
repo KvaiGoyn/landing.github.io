@@ -5,8 +5,6 @@ Disallow: /api/
 Disallow: /admin/
 Disallow: /private/
 Disallow: /*.json$
-Disallow: /*.xml$  # кроме sitemap.xml
-Allow: /sitemap.xml
 
 # Скорость сканирования (запросов в секунду)
 Crawl-delay: 2

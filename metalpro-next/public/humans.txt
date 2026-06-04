@@ -2,10 +2,10 @@
 Разработчик: Команда Стиль Мастер
 Сайт: https://stylmaster.ru
 Email: dmn-ekb@yandex.ru
-Город: Москва, Россия
+Город: Екатеринбург, Россия
 
 /* ТЕХНОЛОГИИ */
-Frontend: Next.js 16, React 19, TypeScript, Tailwind CSS 4
+Frontend: Next.js 24, React 19, TypeScript, Tailwind CSS 4
 Backend: Node.js, API Routes
 Хостинг: Vercel
 Сборка: Turbopack
