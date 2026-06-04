@@ -14,24 +14,24 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
     <xhtml:link rel="alternate" hreflang="ru" href="${SITE_URL}/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="${SITE_URL}/" />
     <image:image>
-      <image:loc>${SITE_URL}/images/case_main.jpeg</image:loc>
+      <image:loc>${SITE_URL}/images/project-gates-main.jpeg</image:loc>
       <image:title>Пример работ Стиль Мастер — металлоконструкции</image:title>
       <image:caption>Производство металлоизделий под ключ</image:caption>
     </image:image>
     <image:image>
-      <image:loc>${SITE_URL}/images/case_paint_after.jpg</image:loc>
+      <image:loc>${SITE_URL}/images/project-gates-paint-after.jpg</image:loc>
       <image:title>Порошковая покраска металлоизделий</image:title>
     </image:image>
     <image:image>
-      <image:loc>${SITE_URL}/images/case_build.jpeg</image:loc>
+      <image:loc>${SITE_URL}/images/project-gates-welding.jpeg</image:loc>
       <image:title>Сварочные работы</image:title>
     </image:image>
     <image:image>
-      <image:loc>${SITE_URL}/images/123.jpg</image:loc>
+      <image:loc>${SITE_URL}/images/hero-bg.jpg</image:loc>
       <image:title>Производство металлоизделий Стиль Мастер</image:title>
     </image:image>
     <image:image>
-      <image:loc>${SITE_URL}/images/9153.jpg</image:loc>
+      <image:loc>${SITE_URL}/images/advantages-bg.jpg</image:loc>
       <image:title>Цех металлообработки Стиль Мастер</image:title>
     </image:image>
   </url>

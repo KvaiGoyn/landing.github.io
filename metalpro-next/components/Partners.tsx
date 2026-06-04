@@ -3,13 +3,13 @@ import Image from 'next/image';
 
 const Partners = () => {
   const partners = [
-        { name: "Кировский", type: "Продуктовый магазин", image: "/images/kirovski.png" },
-        { name: "Магнит", type: "Продуктовый магазин", image: "/images/Magnit.png" },
-        { name: "Пятёрочка", type: "Продуктовый магазин", image: "/images/pyaterochka.png" },
-        { name: "Перекрёсток", type: "Продуктовый магазин", image: "/images/perekrestok.png" },
-        { name: "МТС", type: "Салон связи", image: "/images/mts.png" },
-        { name: "Мотив", type: "Салон связи", image: "/images/motiv.png" },
-        { name: "Мегафон", type: "Салон связи", image: "/images/megofon.png" },
+        { name: "Кировский", type: "Продуктовый магазин", image: "/images/partner-kirovski.png" },
+        { name: "Магнит", type: "Продуктовый магазин", image: "/images/partner-magnit.png" },
+        { name: "Пятёрочка", type: "Продуктовый магазин", image: "/images/partner-pyaterochka.png" },
+        { name: "Перекрёсток", type: "Продуктовый магазин", image: "/images/partner-perekrestok.png" },
+        { name: "МТС", type: "Салон связи", image: "/images/partner-mts.png" },
+        { name: "Мотив", type: "Салон связи", image: "/images/partner-motiv.png" },
+        { name: "Мегафон", type: "Салон связи", image: "/images/partner-megafon.jpg" },
         { name: "Табак +", type: "Табачный магазин", image: null },
         { name: "Первый Табачный", type: "Табачный магазин", image: null }
   ];

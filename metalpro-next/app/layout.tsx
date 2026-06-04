@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     siteName: "Стиль Мастер",
     images: [
       {
-        url: "/images/case_main.jpeg",
+        url: "/images/project-gates-main.jpeg",
         width: 1200,
         height: 630,
         alt: "Пример работ Стиль Мастер — металлоконструкции",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Стиль Мастер — Производство металлоизделий под ключ",
     description: "Сварка, покраска, монтаж — всё в одном месте. Гарантия до 20 лет.",
-    images: ["/images/case_main.jpeg"],
+    images: ["/images/project-gates-main.jpeg"],
     creator: "@stil_master",
   },
   alternates: {
@@ -64,7 +64,7 @@ export default function RootLayout({
         {/* Предзагрузка ключевого изображения для LCP (геройское изображение) */}
         <link
           rel="preload"
-          href="/images/case_main.jpeg"
+          href="/images/project-gates-main.jpeg"
           as="image"
           type="image/jpeg"
           fetchPriority="high"
@@ -73,7 +73,7 @@ export default function RootLayout({
         {/* Предзагрузка оптимизированного видео в формате webm (самый легкий) */}
         <link
           rel="preload"
-          href="/images/Hero_optimized.webm"
+          href="/images/hero-video.webm"
           as="video"
           type="video/webm"
           fetchPriority="high"
@@ -107,7 +107,7 @@ export default function RootLayout({
                   "description": "Профессиональное производство металлоизделий под ключ: сварочные работы, порошковая покраска, антивандальные решётки, перила, ворота, навесы.",
                   "url": "https://stylmaster.ru",
                   "logo": "https://stylmaster.ru/logo.svg",
-                  "image": "https://stylmaster.ru/images/case_main.jpeg",
+                  "image": "https://stylmaster.ru/images/project-gates-main.jpeg",
                   "address": {
                     "@type": "PostalAddress",
                     "addressLocality": "Москва",

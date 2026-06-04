@@ -6,7 +6,7 @@ const Advantages = () => {
       id="advantages"
       className="py-20 lg:py-28 relative overflow-hidden"
       style={{
-        backgroundImage: `url('/images/9153.jpg')`,
+        backgroundImage: `url('/images/advantages-bg.jpg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',

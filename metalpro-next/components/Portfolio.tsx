@@ -37,7 +37,7 @@ const Portfolio = () => {
         id: 1,
         title: "Антивандальные решётки для офиса Мегафон",
         description: "Проект под ключ: усиленная сварка, порошковая покраска, антивандальное покрытие, монтаж на объекте.",
-        image: "/images/megofon.jpg",
+        image: "/images/partner-megafon.jpg",
         tags: ["Сварка", "Покраска", "Монтаж"],
         category: "Решётки",
         hasRealPhoto: true
@@ -46,7 +46,7 @@ const Portfolio = () => {
         id: 2,
         title: "Антивандальная решетка в частный дом",
         description: "Решетка из нержавеющей стали с порошковым покрытием.",
-        image: "/images/armature.jpeg",
+        image: "/images/project-grates.jpeg",
         tags: ["Сварка", "Покраска", "Монтаж"],
         category: "Решётки"
       },
@@ -54,7 +54,7 @@ const Portfolio = () => {
         id: 3,
         title: "Покраска рамы мотоцикла",
         description: "Пескоструйная очистка, порошковая покраска рамы в зеленый RAL6038.",
-        image: "/images/motocycle.jpeg",
+        image: "/images/project-frame-painting.jpeg",
         tags: ["Покраска"],
         category: "Покраска"
       },
@@ -62,7 +62,7 @@ const Portfolio = () => {
         id: 4,
         title: "Транспортная система для печи",
         description: "Рольганговая транспортная система для подачи заготовок в промышленную печь. Полный цикл: проектирование, сварка, порошковая покраска, монтаж и пусконаладка.",
-        image: "/images/metal.jpg",
+        image: "/images/project-roller-system.jpeg",
         tags: ["Сварка", "Покраска", "Монтаж"],
         category: "Металлоконструкции"
       },
@@ -70,7 +70,7 @@ const Portfolio = () => {
         id: 5,
         title: "Основание стола",
         description: "Декоративное подстолье по чертежам заказчика.",
-        image: "/images/table.jpeg",
+        image: "/images/project-table-underframe.jpeg",
         tags: ["Сварка", "Покраска"],
         category: "Металлоконструкции",
       },
@@ -78,7 +78,7 @@ const Portfolio = () => {
         id: 6,
         title: "Покраска дисков",
         description: "Отчистка накладок на диски машины с последующей порошковой покраской",
-        image: "/images/disk.jpeg",
+        image: "/images/project-wheel-discs.jpeg",
         tags: ["Покраска"],
         category: "Покраска",
       },
@@ -88,11 +88,11 @@ const Portfolio = () => {
 
   // Все фото для модалки (карусель)
   const modalImages = [
-    '/images/case_main.jpeg',
-    '/images/case_build.jpeg',
-    '/images/case_dev.jpeg',
-    '/images/case_paint_before.jpg',
-    '/images/case_paint_after.jpg',
+    '/images/project-gates-main.jpeg',
+    '/images/project-gates-welding.jpeg',
+    '/images/project-gates-installation.jpeg',
+    '/images/project-gates-paint-before.jpg',
+    '/images/project-gates-paint-after.jpg',
   ];
 
   const filteredItems = useMemo(
@@ -227,7 +227,7 @@ const Portfolio = () => {
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 relative z-10">
             <div className="aspect-video rounded-2xl overflow-hidden relative">
               <Image
-                src="/images/case_main.jpeg"
+                src="/images/project-gates-main.jpeg"
                 alt="Готовые металлоконструкции после порошковой покраски — пример работы Стиль Мастер"
                 fill
                 className="object-cover"

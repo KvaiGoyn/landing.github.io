@@ -23,7 +23,7 @@ const Hero = () => {
     <section 
       className="relative min-h-screen flex items-center overflow-hidden"
       style={{
-        backgroundImage: "url('/images/123.jpg')",
+        backgroundImage: "url('/images/hero-bg.jpg')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
@@ -132,10 +132,10 @@ const Hero = () => {
                     loop
                     playsInline
                     preload="none"
-                    poster="/images/case_main.jpeg"
+                    poster="/images/project-gates-main.jpeg"
                   >
-                    <source src="/images/Hero_optimized.webm" type="video/webm" />
-                    <source src="/images/Hero_optimized.mp4" type="video/mp4" />
+                    <source src="/images/hero-video.webm" type="video/webm" />
+                    <source src="/images/hero-video.mp4" type="video/mp4" />
                     Ваш браузер не поддерживает видео.
                   </video>
                 </div>
