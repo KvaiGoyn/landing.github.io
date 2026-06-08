@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ["latin", "cyrillic"] });
 export const metadata: Metadata = {
   metadataBase: new URL('https://stylmaster.ru'),
   title: "Стиль Мастер — Производство металлоизделий под ключ | Сварка, покраска, монтаж",
-  description: "Профессиональное производство металлоизделий под ключ: сварочные работы, порошковая покраска, антивандальные решётки, перила, ворота, навесы. Гарантия до 20 лет. Работаем по Москве и области.",
+  description: "Профессиональное производство металлоизделий под ключ: сварочные работы, порошковая покраска, антивандальные решётки, перила, ворота, навесы. Гарантия до года. Работаем по Екатеринбургу и области.",
   keywords: "сварка, порошковая покраска, решётки, металлоконструкции, антивандальные решётки, перила, ворота, навесы, производство металлоизделий, металлообработка, сварочные работы цена, покраска металла, заказать решётки на окна",
   authors: [{ name: "Стиль Мастер" }],
   robots: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Стиль Мастер — Производство металлоизделий под ключ",
-    description: "Сварка, покраска, монтаж — всё в одном месте. Гарантия до 20 лет. Работаем по Москве и области.",
+    description: "Сварка, покраска, монтаж — всё в одном месте. Гарантия до года. Работаем по Екатеринбургу и области.",
     type: "website",
     url: "https://stylmaster.ru",
     siteName: "Стиль Мастер",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Стиль Мастер — Производство металлоизделий под ключ",
-    description: "Сварка, покраска, монтаж — всё в одном месте. Гарантия до 20 лет.",
+    description: "Сварка, покраска, монтаж — всё в одном месте. Гарантия до года.",
     images: ["/images/project-gates-main.jpeg"],
     creator: "@stil_master",
   },
@@ -110,8 +110,8 @@ export default function RootLayout({
                   "image": "https://stylmaster.ru/images/project-gates-main.jpeg",
                   "address": {
                     "@type": "PostalAddress",
-                    "addressLocality": "Москва",
-                    "addressRegion": "Московская область",
+                    "addressLocality": "Екатеринбург",
+                    "addressRegion": "Свердловская область",
                     "addressCountry": "RU"
                   },
                   "telephone": "+7 (912) 222-02-41",
