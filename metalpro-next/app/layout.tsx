@@ -10,8 +10,8 @@ const inter = Inter({ subsets: ["latin", "cyrillic"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://stylmaster.ru'),
-  title: "Стиль Мастер — Производство металлоизделий под ключ | Сварка, покраска, монтаж",
-  description: "Профессиональное производство металлоизделий под ключ: сварочные работы, порошковая покраска, антивандальные решётки, перила, ворота, навесы. Гарантия до года. Работаем по Екатеринбургу и области.",
+  title: "Стиль Мастер | Сварка, покраска, монтаж!", // 40 символов
+  description: "Производство металлоизделий под ключ в Екатеринбурге: сварка, порошковая покраска, решётки, перила, ворота, навесы. Гарантия до года.", // 130 символов
   keywords: "сварка, порошковая покраска, решётки, металлоконструкции, антивандальные решётки, перила, ворота, навесы, производство металлоизделий, металлообработка, сварочные работы цена, покраска металла, заказать решётки на окна",
   authors: [{ name: "Стиль Мастер" }],
   robots: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
@@ -19,8 +19,8 @@ export const metadata: Metadata = {
     yandex: "e3ad7eec044ee846",
   },
   openGraph: {
-    title: "Стиль Мастер — Производство металлоизделий под ключ",
-    description: "Сварка, покраска, монтаж — всё в одном месте. Гарантия до года. Работаем по Екатеринбургу и области.",
+    title: "Стиль Мастер | Сварка, покраска, монтаж!",
+    description: "Производство металлоизделий под ключ в Екатеринбурге: сварка, порошковая покраска, решётки, перила, ворота, навесы. Гарантия до года.",
     type: "website",
     url: "https://stylmaster.ru",
     siteName: "Стиль Мастер",
@@ -36,8 +36,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Стиль Мастер — Производство металлоизделий под ключ",
-    description: "Сварка, покраска, монтаж — всё в одном месте. Гарантия до года.",
+    title: "Стиль Мастер | Сварка, покраска, монтаж!",
+    description: "Производство металлоизделий под ключ в Екатеринбурге: сварка, порошковая покраска, решётки, перила, ворота, навесы. Гарантия до года.",
     images: ["/images/project-gates-main.jpeg"],
     creator: "@stil_master",
   },
@@ -56,11 +56,11 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/logo.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        
+
         {/* Предзагрузка критических ресурсов для улучшения производительности */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
+
         {/* Предзагрузка ключевого изображения для LCP (геройское изображение) */}
         <link
           rel="preload"
@@ -69,7 +69,7 @@ export default function RootLayout({
           type="image/jpeg"
           fetchPriority="high"
         />
-        
+
         {/* Предзагрузка оптимизированного видео в формате webm (самый легкий) */}
         <link
           rel="preload"
@@ -78,7 +78,7 @@ export default function RootLayout({
           type="video/webm"
           fetchPriority="high"
         />
-        
+
         {/* Предзагрузка логотипа */}
         <link
           rel="preload"
@@ -329,7 +329,7 @@ export default function RootLayout({
               <div className="text-center">
                 <p className="text-gray-400">© 2025 Стиль Мастер. Все права защищены.</p>
                 <p className="text-gray-500 text-sm mt-2">Производство металлоизделий под ключ</p>
-                
+
                 <div className="mt-6 pt-6 border-t border-gray-800">
                   <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
                     <a
