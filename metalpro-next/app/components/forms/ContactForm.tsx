@@ -59,7 +59,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ compact = false }) => {
             type="email"
             name="email"
             className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-colors"
-            placeholder="your@email.com"
+            placeholder="your@email.ru"
           />
         </div>
         
