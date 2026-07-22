@@ -97,6 +97,8 @@ const Header = () => {
               className="lg:hidden p-2 text-gray-700"
               onClick={toggleMobileMenu}
               aria-label={isMobileMenuOpen ? "Закрыть меню" : "Открыть меню"}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
             >
               {isMobileMenuOpen ? (
                 <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

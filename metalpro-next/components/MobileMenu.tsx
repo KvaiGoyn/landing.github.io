@@ -41,26 +41,21 @@ const MobileMenu = () => {
     }
   };
 
+  if (!isMobileMenuOpen) return null;
+
   return (
     <>
       {/* Оверлей с анимацией */}
       <div
-        className={`lg:hidden fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 ${
-          isMobileMenuOpen
-            ? 'opacity-100 pointer-events-auto'
-            : 'opacity-0 pointer-events-none'
-        }`}
+        className="lg:hidden fixed inset-0 z-40 bg-black/50"
         onClick={handleBackdropClick}
         aria-hidden="true"
       />
       
       {/* Мобильное меню */}
       <div
-        className={`lg:hidden fixed top-16 left-0 right-0 z-50 bg-white shadow-xl rounded-b-2xl mx-4 transition-all duration-300 transform ${
-          isMobileMenuOpen
-            ? 'opacity-100 translate-y-0'
-            : 'opacity-0 -translate-y-4 pointer-events-none'
-        }`}
+        id="mobile-menu"
+        className="lg:hidden fixed top-16 left-0 right-0 z-50 bg-white shadow-xl rounded-b-2xl mx-4 max-h-[calc(100dvh-4rem)] overflow-y-auto"
         role="dialog"
         aria-modal="true"
         aria-label="Мобильное меню"

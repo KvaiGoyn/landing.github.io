@@ -1,76 +1,10 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import ContactForm from '@/app/components/forms/ContactForm';
 import { Accordion, AccordionItem } from '@/app/components/ui/Accordion';
 
-// Объявление типов для Яндекс.Карт
-declare global {
-  interface Window {
-    ymaps?: {
-      ready: (callback: () => void) => void;
-      Map: new (element: HTMLElement | string, options: any) => any;
-      Placemark: new (coordinates: number[], properties?: any, options?: any) => any;
-    };
-  }
-}
-
 const Contact = () => {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<any>(null);
-
-  // Координаты центра карты (адрес: Свердловская область, п. Садовый, ул. Глинная 9)
-  // Можно уточнить через геокодер, но для демонстрации используем приблизительные координаты.
-  const centerCoordinates = [56.953732, 60.672071]; // Широта, долгота (пример для района Екатеринбурга)
-
-  useEffect(() => {
-    // Проверяем, загружен ли уже API Яндекс.Карт
-    if (typeof window !== 'undefined') {
-      if (!window.ymaps) {
-        const script = document.createElement('script');
-        script.src = `https://api-maps.yandex.ru/2.1/?apikey=${process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY}&lang=ru_RU`;
-        script.async = true;
-        script.onload = () => {
-          if (window.ymaps) {
-            window.ymaps.ready(initMap);
-          }
-        };
-        document.head.appendChild(script);
-      } else {
-        window.ymaps.ready(initMap);
-      }
-    }
-
-    return () => {
-      // Очистка карты при размонтировании
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.destroy();
-      }
-    };
-  }, []);
-
-  const initMap = () => {
-    if (!mapRef.current || typeof window === 'undefined' || !window.ymaps) return;
-
-    // Создаём карту
-    const map = new window.ymaps.Map(mapRef.current, {
-      center: centerCoordinates,
-      zoom: 16,
-      controls: ['zoomControl', 'fullscreenControl'],
-    });
-
-    // Добавляем метку
-    const placemark = new window.ymaps.Placemark(centerCoordinates, {
-      hintContent: 'Наше производство',
-      balloonContent: 'Свердловская область, п. Садовый, ул. Глинная 9',
-    }, {
-      preset: 'islands#redIcon',
-    });
-
-    map.geoObjects.add(placemark);
-    mapInstanceRef.current = map;
-  };
-
   return (
     <section id="contacts" className="py-20 lg:py-28 bg-gray-50 relative overflow-hidden">
       <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-orange-100/50 rounded-full blur-3xl"></div>
@@ -146,10 +80,23 @@ const Contact = () => {
           </div>
           
           <div className="space-y-8">
-            {/* Контейнер для карты */}
             <div className="bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl h-64 relative overflow-hidden">
-              <div ref={mapRef} className="absolute inset-0 w-full h-full" />
+              <iframe
+                src="https://yandex.ru/map-widget/v1/?ll=60.672071%2C56.953732&z=16&pt=60.672071%2C56.953732%2Cpm2rdm"
+                title="Карта проезда к производству Стиль Мастер"
+                className="absolute inset-0 w-full h-full border-0"
+                loading="lazy"
+                allowFullScreen
+              />
             </div>
+            <a
+              href="https://yandex.ru/maps/?ll=60.672071%2C56.953732&z=16&pt=60.672071%2C56.953732%2Cpm2rdm"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex text-sm font-medium text-orange-700 hover:text-orange-800 underline"
+            >
+              Открыть маршрут в Яндекс Картах
+            </a>
             
             <div className="bg-white rounded-2xl p-6 border border-gray-100">
               <h4 className="font-bold text-gray-900 mb-4">Часто задаваемые вопросы</h4>

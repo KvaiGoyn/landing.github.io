@@ -46,10 +46,6 @@ export function ModalProvider({ children }: { children: ReactNode }) {
       activeModal: modalType,
       modalData: data,
     });
-    // Блокировка скролла на body
-    if (typeof document !== 'undefined') {
-      document.body.style.overflow = 'hidden';
-    }
   }, []);
 
   // Закрытие модального окна
@@ -58,10 +54,6 @@ export function ModalProvider({ children }: { children: ReactNode }) {
       activeModal: null,
       modalData: {},
     });
-    // Разблокировка скролла
-    if (typeof document !== 'undefined') {
-      document.body.style.overflow = '';
-    }
   }, []);
 
   const value: ModalContextType = {

@@ -19,19 +19,21 @@ const ContactForm: React.FC<ContactFormProps> = ({ compact = false }) => {
       )}
       
       <form
-        action="/api/send"
+        action="/api/send/"
         method="POST"
         className="space-y-4"
       >
         <input type="hidden" name="_subject" value="Новая заявка с лендинга Стиль Мастер" />
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="contact-name" className="block text-sm font-medium text-gray-700 mb-2">
             Имя <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
+            id="contact-name"
             name="name"
+            autoComplete="name"
             required
             className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-colors"
             placeholder="Ваше имя"
@@ -39,12 +41,14 @@ const ContactForm: React.FC<ContactFormProps> = ({ compact = false }) => {
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="contact-phone" className="block text-sm font-medium text-gray-700 mb-2">
             Телефон <span className="text-red-500">*</span>
           </label>
           <input
             type="tel"
+            id="contact-phone"
             name="phone"
+            autoComplete="tel"
             required
             className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-colors"
             placeholder="+7 (___) ___-__-__"
@@ -52,28 +56,37 @@ const ContactForm: React.FC<ContactFormProps> = ({ compact = false }) => {
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="contact-email" className="block text-sm font-medium text-gray-700 mb-2">
             Email (необязательно)
           </label>
           <input
             type="email"
+            id="contact-email"
             name="email"
+            autoComplete="email"
+            spellCheck={false}
             className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-colors"
             placeholder="your@email.ru"
           />
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="contact-message" className="block text-sm font-medium text-gray-700 mb-2">
             Сообщение <span className="text-red-500">*</span>
           </label>
           <textarea
             rows={4}
+            id="contact-message"
             name="message"
             required
             className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-colors resize-none"
             placeholder="Опишите вашу задачу или вопрос..."
           />
+        </div>
+
+        <div className="absolute -left-[9999px]" aria-hidden="true">
+          <label htmlFor="contact-website">Не заполняйте это поле</label>
+          <input id="contact-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
         </div>
         
         <div className="flex items-center gap-3">
