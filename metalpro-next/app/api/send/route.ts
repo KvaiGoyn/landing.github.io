@@ -58,7 +58,10 @@ export async function POST(request: NextRequest) {
       html,
     });
 
-    return NextResponse.redirect(new URL('/thank-you', request.url));
+    return new NextResponse(null, {
+      status: 303,
+      headers: { Location: '/thank-you' },
+    });
   } catch (error) {
     console.error('SMTP send error:', error);
     return NextResponse.json(
